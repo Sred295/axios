@@ -49,6 +49,13 @@ describe('core::AxiosError', function() {
     });
   });
 
+  it('should be a native error as checked by the NodeJS `isNativeError` function', async function (){
+    if((typeof process !== 'undefined') && (process.release.name === 'node')){
+      let {isNativeError} = require('node:util/types');
+      expect(isNativeError(new AxiosError("My Axios Error"))).toBeTruthy();
+    }
+  });
+
   it('should have status property when response was passed to the constructor', () => {
       const err = new AxiosError('test', 'foo', {}, {}, {status: 400});
       expect(err.status).toBe(400);
