@@ -1,5 +1,6 @@
 import AxiosError from '../../../lib/core/AxiosError';
 
+
 describe('core::AxiosError', function() {
   it('should create an Error with message, config, code, request, response, stack and isAxiosError', function() {
     const request = { path: '/foo' };
@@ -54,6 +55,11 @@ describe('core::AxiosError', function() {
       let {isNativeError} = require('node:util/types');
       expect(isNativeError(new AxiosError("My Axios Error"))).toBeTruthy();
     }
+  });
+
+  it('should create an error using one of the static class properties as an error code', async function (){
+    const myError = new AxiosError("My Axios Error", AxiosError.ECONNABORTED);
+    expect(myError.code).toEqual(AxiosError.ECONNABORTED);
   });
 
   it('should have status property when response was passed to the constructor', () => {
