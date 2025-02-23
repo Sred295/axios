@@ -43,6 +43,7 @@ const gzip = util.promisify(zlib.gzip);
 const deflate = util.promisify(zlib.deflate);
 const deflateRaw = util.promisify(zlib.deflateRaw);
 const brotliCompress = util.promisify(zlib.brotliCompress);
+const zstdCompress = util.promisify(zlib.zstdCompress);
 
 function toleranceRange(positive, negative) {
   const p = (1 + 1 / positive);
@@ -628,7 +629,8 @@ describe('supports http with nodejs', function () {
         compress: gzip(responseBody),
         deflate: deflate(responseBody),
         'deflate-raw': deflateRaw(responseBody),
-        br: brotliCompress(responseBody)
+        br: brotliCompress(responseBody),
+        zstd: zstdCompress(responseBody)
       })) {
         const type = typeName.split('-')[0];
 
