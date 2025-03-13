@@ -1353,7 +1353,7 @@
         requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
       }
 
-      var fullPath = buildFullPath(config.baseURL, config.url);
+      var fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
 
       request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
@@ -2126,7 +2126,7 @@
 
   Axios.prototype.getUri = function getUri(config) {
     config = mergeConfig(this.defaults, config);
-    var fullPath = buildFullPath(config.baseURL, config.url);
+    var fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
     return buildURL(fullPath, config.params, config.paramsSerializer);
   };
 
