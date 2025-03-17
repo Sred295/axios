@@ -16,5 +16,7 @@ describe('helpers::buildFullPath', function () {
   it('should combine URLs when the baseURL and requestedURL are relative', function () {
     expect(buildFullPath('/api', '/users')).toBe('/api/users');
   });
-
+  it('should not combine the URLs when the requestedURL is absolute, allowAbsoluteUrls is false, and the baseURL is not configured', function () {
+    expect(buildFullPath(undefined, 'https://api.example.com/users', false)).toBe('https://api.example.com/users');
+  });
 });
