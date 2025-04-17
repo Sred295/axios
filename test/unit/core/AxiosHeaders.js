@@ -73,7 +73,15 @@ describe('AxiosHeaders', function () {
       headers.set('foo', 'value2', true);
 
       assert.strictEqual(headers.get('foo'), 'value2');
-    })
+    });
+
+    it('should support iterables as a key-value source object', function () {
+      const headers = new AxiosHeaders();
+
+      headers.set(new Map([['x', '123']]));
+
+      assert.strictEqual(headers.get('x'), '123');
+    });
   });
 
   it('should support uppercase name mapping for names overlapped by class methods', () => {
