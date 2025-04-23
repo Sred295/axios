@@ -1,6 +1,7 @@
 import AxiosHeaders from '../../../lib/core/AxiosHeaders.js';
 import assert from 'assert';
 
+const [nodeMajorVersion] = process.versions.node.split('.').map(v => parseInt(v, 10));
 
 describe('AxiosHeaders', function () {
   it('should support headers argument', function () {
@@ -81,6 +82,27 @@ describe('AxiosHeaders', function () {
       headers.set(new Map([['x', '123']]));
 
       assert.strictEqual(headers.get('x'), '123');
+    });
+
+    it('should support setting multiple header values from an iterable source', function () {
+      if (nodeMajorVersion < 18) {
+        this.skip();
+        return;
+      }
+
+      const headers = new AxiosHeaders();
+
+      const nativeHeaders = new Headers();
+
+      nativeHeaders.append('set-cookie', 'foo');
+      nativeHeaders.append('set-cookie', 'bar');
+      nativeHeaders.append('set-cookie', 'baz');
+      nativeHeaders.append('y', 'qux');
+
+      headers.set(nativeHeaders);
+
+      assert.deepStrictEqual(headers.get('set-cookie'), ['foo', 'bar', 'baz']);
+      assert.strictEqual(headers.get('y'), 'qux');
     });
   });
 
