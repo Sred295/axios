@@ -55,8 +55,8 @@ jobs:
             **New sponsor block update:**
             ${{ env.CONTENT }}
           labels: |
-            readme
-            automated pr
+            pr::docs
+            bot
             automerge
           signoff: false
           #team-reviewers: |
