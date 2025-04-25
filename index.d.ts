@@ -302,7 +302,7 @@ export interface AxiosProgressEvent {
 
 type Milliseconds = number;
 
-type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | string;
+type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | (string & {});
 
 type AxiosAdapterConfig = AxiosAdapter | AxiosAdapterName;
 
