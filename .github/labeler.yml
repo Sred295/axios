@@ -15,9 +15,9 @@
   - changed-files:
       - any-glob-to-any-file: 'test/**.js'
 
-"pr::github-actions":
+"pr::github":
   - changed-files:
-      - any-glob-to-any-file: '**.d.ts'
+      - any-glob-to-any-file: '.github/**'
 
 "pr::examples":
   - changed-files:
