@@ -225,7 +225,8 @@ module.exports = function(config) {
       devtool: 'inline-source-map',
       externals: [
         {
-          './adapters/http': 'var undefined'
+          './adapters/http': 'var undefined',
+          './adapters/http2': 'var undefined'
         }
       ]
     },
