@@ -76,7 +76,7 @@ export const startHTTP2Server = (handlerOrOptions, options) => {
   const {port = 4444} = options;
 
   return new Promise((resolve, reject) => {
-    const server = http2.createSecureServer(
+    http2.createSecureServer(
       options,
       handlerOrOptions
     ).on('session', (session) => {

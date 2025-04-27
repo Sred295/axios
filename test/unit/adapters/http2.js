@@ -18,6 +18,15 @@ const http2Axios = axios.create({
 
 let server;
 
+function sanitizeUrl(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 describe('supports http2 with nodejs', () => {
   afterEach(async function () {
     await stopHTTP2Server(server);
@@ -249,7 +258,9 @@ describe('supports http2 with nodejs', () => {
   });
 
   it('should support params', async () => {
-    server = await startHTTP2Server((req, res) => res.end(req.url));
+    server = await startHTTP2Server((req, res) => {
+      res.end(sanitizeUrl(req.url));
+    });
 
     const { data } = await http2Axios.get('/?test=1', {
       params: {
@@ -264,7 +275,7 @@ describe('supports http2 with nodejs', () => {
   it('should get response headers', async () => {
     server = await startHTTP2Server((req, res) => {
       res.setHeader('foo', 'bar');
-      res.end(req.url)
+      res.end(sanitizeUrl(req.url));
     });
 
     const { headers } = await http2Axios.get('/', {
