@@ -1,11 +1,14 @@
 import http from "http";
+import http2 from "http2";
 import stream from "stream";
 import getStream from "get-stream";
 import {Throttle} from "stream-throttle";
 import formidable from "formidable";
+import selfsigned from 'selfsigned';
 
 
 export const LOCAL_SERVER_URL = 'http://localhost:4444';
+export const LOCAL_SERVER_HTTP2_URL = 'https://127.0.0.1:4444';
 
 export const SERVER_HANDLER_STREAM_ECHO = (req, res) => req.pipe(res);
 
@@ -58,6 +61,48 @@ export const stopHTTPServer = async (server, timeout = 10000) => {
       server.closeAllConnections();
     }
 
+    await Promise.race([new Promise(resolve => server.close(resolve)), setTimeoutAsync(timeout)]);
+  }
+}
+
+const generatedCertificate = selfsigned.generate();
+const activeSessions = new Set();
+
+export const startHTTP2Server = (handlerOrOptions, options) => {
+  if(!options) options = {};
+  options.key = generatedCertificate.private;
+  options.cert = generatedCertificate.cert;
+    
+  const {port = 4444} = options;
+
+  return new Promise((resolve, reject) => {
+    const server = http2.createSecureServer(
+      options,
+      handlerOrOptions
+    ).on('session', (session) => {
+      activeSessions.add(session);
+
+      session.on('close', () => {
+        activeSessions.delete(session);
+      });
+    }).listen(port, function (err) {
+      err ? reject(err) : resolve(this);
+    });
+  });
+}
+
+const closeActiveSessions = () => {
+  for (const session of activeSessions) {
+    session.destroy();
+  }
+};
+
+export const stopHTTP2Server = async (server, timeout = 10000) => {
+  if (server) {
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+    closeActiveSessions();
     await Promise.race([new Promise(resolve => server.close(resolve)), setTimeoutAsync(timeout)]);
   }
 }

@@ -347,6 +347,7 @@ export interface AxiosRequestConfig<D = any> {
   transport?: any;
   httpAgent?: any;
   httpsAgent?: any;
+  http2Agent?: any;
   proxy?: AxiosProxyConfig | false;
   cancelToken?: CancelToken;
   decompress?: boolean;
@@ -369,6 +370,7 @@ export interface AxiosRequestConfig<D = any> {
   withXSRFToken?: boolean | ((config: InternalAxiosRequestConfig) => boolean | undefined);
   parseReviver?: (this: any, key: string, value: any) => any;
   fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
+  http2Options?: Record<string, any>;
 }
 
 // Alias

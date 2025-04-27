@@ -415,6 +415,7 @@ declare namespace axios {
     transport?: any;
     httpAgent?: any;
     httpsAgent?: any;
+    http2Agent?: any;
     proxy?: AxiosProxyConfig | false;
     cancelToken?: CancelToken;
     decompress?: boolean;
@@ -436,6 +437,7 @@ declare namespace axios {
         ((hostname: string, options: object) => Promise<[address: LookupAddressEntry | LookupAddressEntry[], family?: AddressFamily] | LookupAddress>);
     withXSRFToken?: boolean | ((config: InternalAxiosRequestConfig) => boolean | undefined);
     fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
+    http2Options?: Record<string, any>;
   }
 
   // Alias
