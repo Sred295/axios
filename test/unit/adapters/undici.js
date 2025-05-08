@@ -372,7 +372,16 @@ describe('supports undici with nodejs', function () {
       await undiciAxios('http://notExistsUrl.in.nowhere');
       assert.fail('should fail');
     } catch (err) {
-      assert.strictEqual(String(err), 'AxiosError: Network Error');
+      assert.strictEqual(String(err), 'Error: getaddrinfo ENOTFOUND notexistsurl.in.nowhere');
+      assert.strictEqual(err.cause && err.cause.code, 'ENOTFOUND');
+    }
+    try{
+      await undiciAxios('http://notExistsUrl.in.nowhere', {
+        responseType: 'stream'
+      });
+      assert.fail('should fail');
+    } catch (err) {
+      assert.strictEqual(String(err), 'Error: getaddrinfo ENOTFOUND notexistsurl.in.nowhere');
       assert.strictEqual(err.cause && err.cause.code, 'ENOTFOUND');
     }
   });
