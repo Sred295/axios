@@ -12,6 +12,7 @@ import axios from '../../../index.js';
 import stream from "stream";
 import {AbortController} from "abortcontroller-polyfill/dist/cjs-ponyfill.js";
 import util from "util";
+import {FormData as UndiciFormData} from "undici";
 
 const pipelineAsync = util.promisify(stream.pipeline);
 
@@ -103,7 +104,7 @@ describe('supports undici with nodejs', function () {
         responseType: 'formdata'
       });
 
-      assert.ok(data instanceof FormData, 'data is not instanceof FormData');
+      assert.ok(data instanceof UndiciFormData, 'data is not instanceof FormData');
 
       assert.deepStrictEqual(Object.fromEntries(data.entries()), Object.fromEntries(originalData.entries()));
     });
