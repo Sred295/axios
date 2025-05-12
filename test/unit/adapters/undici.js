@@ -400,4 +400,19 @@ describe('supports undici with nodejs', function () {
 
     assert.strictEqual(headers.get('foo'), 'bar');
   });
+
+  it('should support max redirects', async function () {
+    var i = 1;
+    server = await startHTTPServer((req, res) => {
+      res.setHeader('Location', '/' + i);
+      res.statusCode = 302;
+      res.end();
+      i++;
+    });
+
+    await undiciAxios.get('/', {
+      maxRedirects: 3
+    });
+    assert.equal(i, 5);
+  });
 });
