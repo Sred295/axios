@@ -20,13 +20,14 @@ import axios, {
   all,
   isCancel,
   isAxiosError,
-  spread
+  spread, AddressFamily
 } from 'axios';
 
 const config: AxiosRequestConfig = {
   url: '/user',
   method: 'get',
   baseURL: 'https://api.example.com/',
+  allowAbsoluteUrls: false,
   transformRequest: (data: any) => '{"foo":"bar"}',
   transformResponse: [
     (data: any) => ({ baz: 'qux' })
@@ -236,7 +237,7 @@ axios.request<User, string>({
 // Instances
 
 const instance1: AxiosInstance = axios.create();
-const instance2: AxiosInstance = axios.create(config);
+const instance2: AxiosInstance = instance1.create(config);
 
 instance1(config)
     .then(handleResponse)
@@ -574,7 +575,7 @@ axios.get('/user', {
 
 {
   // getAdapter
-  
+
   getAdapter(axios.create().defaults.adapter);
   getAdapter(undefined);
   getAdapter([]);
@@ -658,7 +659,7 @@ for (const [header, value] of headers) {
 
 // lookup
 axios.get('/user', {
-  lookup: (hostname: string, opt: object, cb: (err: Error | null, address: string, family: number) => void) => {
+  lookup: (hostname: string, opt: object, cb: (err: Error | null, address: string, family: AddressFamily) => void) => {
     cb(null, '127.0.0.1', 4);
   }
 });
