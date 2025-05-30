@@ -1,5 +1,4 @@
 import axios, {
-  InternalAxiosRequestConfig,
   AxiosRequestConfig,
   AxiosHeaders,
   AxiosRequestHeaders,
