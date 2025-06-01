@@ -185,7 +185,7 @@ describe('defaults', function () {
     });
   });
 
-  it('should resistent to ReDoS attack', function (done) {
+  it('should resistant to ReDoS attack', function (done) {
     const instance = axios.create();
     const start = performance.now();
     const slashes = '/'.repeat(100000);
