@@ -2332,4 +2332,32 @@ describe('supports http with nodejs', function () {
       }, /ENOTFOUND/);
     });
   });
+  
+  describe('Partial response on stream abort', function () {
+    it('should preserve partial response when stream is aborted after headers', async function () {
+      this.timeout(5000);
+
+      server = await startHTTPServer({
+        handler(req, res) {
+          res.writeHead(404, {'Content-Type': 'application/json'});
+          res.write(JSON.stringify({message: 'partial content'}));
+          setTimeout(() => {
+            res.destroy(); // Simulate aborting the stream after headers + partial body
+          }, 100);
+        }
+      });
+
+      try {
+        await axios.get(LOCAL_SERVER_URL, { responseType: 'text' });
+        throw new Error('Request should have failed');
+      } catch (err) {
+        assert.strictEqual(err.message, 'stream has been aborted');
+        assert.strictEqual(err.response?.status, 404);
+        assert.deepStrictEqual(
+          JSON.parse(err.response?.data),
+          {message: 'partial content'}
+        );
+      }
+    });
+  });
 });
