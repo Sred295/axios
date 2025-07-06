@@ -16,7 +16,7 @@ Please update the tests to reflect your code changes. Pull requests will not be 
 
 ## Documentation
 
-Please update the [docs](README.md) accordingly so that there are no discrepancies between the API and the documentation.
+Please update the [documentation](https://axios-http.com/docs/intro) accordingly so that there are no discrepancies between the API and the documentation.
 
 ## Developing
 
