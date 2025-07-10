@@ -1,0 +1,47 @@
+name: Custom CI Pipeline for Axios Fork
+
+on:
+  push:
+    branches: [ "main", "master", "v1.x" ] 
+  
+  workflow_dispatch:
+
+jobs:
+  build-test-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Project Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' 
+          cache: 'npm'
+
+
+      - name: Install Dependencies
+        run: npm ci
+
+
+      - name: Build Project
+        run: npm run build
+
+
+      - name: Run Unit Tests
+        run: npm test
+
+
+      - name: Create verification file
+        run: echo "Last workflow run on $(date)" > workflow-verification.txt
+
+
+      - name: Commit and Push Verification File
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "CI: Add workflow execution verification file"
+          branch: ${{ github.ref_name }}
+          file_pattern: workflow-verification.txt
+          commit_user_name: GitHub Actions Bot
+          commit_user_email: actions@github.com
