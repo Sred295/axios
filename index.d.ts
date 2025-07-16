@@ -15,13 +15,19 @@ declare class AxiosError_<T = unknown, D = any> extends Error {
     code?: string,
     config?: axios.AxiosRequestConfig<D>,
     request?: any,
-    response?: axios.AxiosResponse<T, D>
+    response?: axios.AxiosResponse<T, D>,
+    originalError?: unknown,
+    event?: ProgressEvent
   );
 
   config?: axios.AxiosRequestConfig<D>;
   code?: string;
   request?: any;
   response?: axios.AxiosResponse<T, D>;
+  /** The original Node error (HTTP adapter) */
+  originalError?: unknown;
+  /** The ProgressEvent raised by the browser (XHR adapter) */
+  event?: ProgressEvent;
   isAxiosError: boolean;
   status?: number;
   toJSON: () => object;
