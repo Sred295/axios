@@ -1,30 +1,34 @@
-<!-- Click "Preview" for a more readable version --
+## Axios version
 
-Please read and follow the instructions before submitting an issue:
+eg. **Axios Version [e.g. 1.7.0]**
 
-- Read all our documentation, especially the [README](https://github.com/axios/axios/blob/main/README.md). It may contain information that helps you solve your issue.
-- Ensure your issue isn't already [reported](https://github.com/axios/axios/issues?utf8=%E2%9C%93&q=is%3Aissue).
-- Please, ensure your issue is not related to CORS or Mixed Content Issue (only relevant for browsers)
-- If you aren't sure that the issue is caused by axios or you just need help, please use [Stack Overflow](https://stackoverflow.com/questions/tagged/axios) or [our chat](https://gitter.im/mzabriskie/axios).
-- If you're reporting a bug, ensure it isn't already fixed in the latest Axios version.
-- If you need a new feature there's a chance it's already implemented in a [library](https://github.com/axios/axios/blob/main/ECOSYSTEM.md) or you can implement it using [interceptors](https://github.com/axios/axios#interceptors).
-- Don't remove any title of the issue template, or it will be treated as invalid by the bot.
+## Steps to reproduce
 
-**⚠️👆 Delete the instructions before submitting the issue 👆⚠️**
-
+<!--
+Please provide a clear an concise set of steps to reproduce the issue.
 -->
 
-#### Summary
+## Current behavior
 
-Describe your issue here, including as much detail as necessary.
+<!--
+Please provide a clear and concise description of the current behavior. As well as any relevant code snippets or stack traces that can help us understand the issue. If possible include a link to a reproducible example on CodeSandbox or similar. If you're requesting a feature, please describe the current behavior and how it differs from what you expect.
+-->
 
-If you're reporting a bug, include the relevant code and stack traces to debug it (removing any private information).
+## Expected behavior
 
-If you're requesting a feature, include some context and examples of code using it.
+<!--
+Please provide a clear and concise description of what you expected to happen. If applicable, include a link to a reproducible example on CodeSandbox or similar. If you're requesting a feature, please describe the feature and how it would be used.
+-->
 
-#### Environment
- - **Axios Version [e.g. 1.7.0]**
- - **Target platform [e.g Node / Browser / React Native version where Axios is running]**
- - **Adapter [e.g. FETCH / XHR / HTTP]**
- - Additional Library/Framework Versions [e.g. React 16.7]
- - OS: [e.g. iOS 12.1.0, OSX 10.13.4] 
+## Checklist
+
+- [ ] I have read the [documentation](https://axios-http.com/docs/intro).
+- [ ] I have searched the [issues](https://github.com/axios/axios/issues).
+- [ ] I have added any relevant labels to this issue.
+
+## Additional information
+
+- **Target platform [e.g Node / Browser / React Native / Electron version where Axios is running]**
+- **Adapter [e.g. FETCH / XHR / HTTP]**
+- Additional Library/Framework Versions [e.g. React 16.7]
+- OS: [e.g. iOS 12.1.0, OSX 10.13.4]

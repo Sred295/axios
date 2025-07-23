@@ -1,13 +1,20 @@
-<!-- Click "Preview" for a more readable version -->
+## Summary
 
-#### Instructions
+<!--
+Please provide a clear and concise description of the changes introduced by this pull request. Include any relevant context or background information. Please limit use of AI tools to ensure the description is accurate and reflects the actual changes made.
+-->
 
-Please read and follow the instructions before creating and submitting a pull request:
+## Issues
 
-- Create an issue explaining the feature. It could save you some effort in case we don't consider it should be included in axios.
-- If you're fixing a bug, try to commit the failing test/s and the code fixing it in different commits.
-- Ensure you're following our [contributing guide](https://github.com/axios/axios/blob/master/CONTRIBUTING.md).
+<!--
+Please link any related issues here.
+-->
 
-**⚠️👆 Delete the instructions before submitting the pull request 👆⚠️**
+Closes #<issue-number>
 
-Describe your pull request here.
+## Checklist
+
+- [ ] I have read the [contributing guidelines](https://github.com/axios/axios/blob/master/CONTRIBUTING.md).
+- [ ] I have linked all related issues, added labels, and assigned the appropriate reviewers.
+- [ ] I have added/updated tests to cover my changes.
+- [ ] I have updated the documentation (if applicable).
