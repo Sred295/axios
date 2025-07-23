@@ -1,0 +1,36 @@
+{
+  "name": "@axios/utilities",
+  "description": "Utilities for axios",
+  "version": "1.0.0",
+  "source": "src/index.ts",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "scripts": {
+    "lib:build": "parcel build"
+  },
+  "type": "module",
+  "author": "Axios community",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axios/axios/issues"
+  },
+  "sideEffects": false,
+  "packageManager": "pnpm@10.7.0",
+  "devDependencies": {
+    "@parcel/bundler-library": "^2.14.3",
+    "@parcel/config-default": "^2.14.3",
+    "parcel": "^2.14.3",
+    "prettier": "3.5.3",
+    "xo": "^0.60.0"
+  },
+  "xo": {
+    "space": true,
+    "rules": {
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ]
+    }
+  }
+}

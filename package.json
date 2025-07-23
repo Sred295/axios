@@ -1,0 +1,54 @@
+{
+  "name": "@axios/monolith",
+  "version": "2.0.0",
+  "description": "Promise based HTTP client for the browser and node.js",
+  "main": "index.js",
+  "scripts": {
+    "axios:build": "pnpm --filter axios lib:build",
+    "prepare": "husky"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axios/axios.git"
+  },
+  "keywords": [
+    "xhr",
+    "http",
+    "ajax",
+    "promise",
+    "node"
+  ],
+  "author": "Jason Saayman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axios/axios/issues"
+  },
+  "homepage": "https://axios-http.com",
+  "sideEffects": false,
+  "packageManager": "pnpm@10.7.0",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@commitlint/types": "^19.8.0",
+    "@parcel/packager-ts": "2.14.3",
+    "@parcel/transformer-typescript-types": "2.14.3",
+    "husky": "^9.1.7",
+    "typescript": ">=3.0.0",
+    "xo": "^0.60.0"
+  },
+  "xo": {
+    "space": true,
+    "rules": {
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "@typescript-eslint/object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "@typescript-eslint/naming-convention": "off"
+    }
+  }
+}

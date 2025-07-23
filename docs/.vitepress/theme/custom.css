@@ -1,0 +1,11 @@
+:root {
+  --card-border-color: #E5E7EB;
+  --card-background-color: #ffffff;
+  --card-between-border-color: #E5E7EB;
+}
+
+.dark {
+  --card-border-color: #202127;
+  --card-background-color: #202127;
+  --card-between-border-color: #2f323a;
+}
