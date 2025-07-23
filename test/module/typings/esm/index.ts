@@ -1,5 +1,4 @@
 import axios, {
-  InternalAxiosRequestConfig,
   AxiosRequestConfig,
   AxiosHeaders,
   AxiosRequestHeaders,
@@ -627,7 +626,7 @@ for (const [header, value] of headers) {
   headers.get('x');
 })();
 
-// AxiosHeaders instance assigment
+// AxiosHeaders instance assignment
 
 {
   const requestInterceptorId: number = axios.interceptors.request.use(
