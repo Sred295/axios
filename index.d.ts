@@ -15,23 +15,19 @@ declare class AxiosError_<T = unknown, D = any> extends Error {
     code?: string,
     config?: axios.AxiosRequestConfig<D>,
     request?: any,
-    response?: axios.AxiosResponse<T, D>,
-    originalError?: unknown,
-    event?: ProgressEvent
+    response?: axios.AxiosResponse<T, D>
   );
 
   config?: axios.AxiosRequestConfig<D>;
   code?: string;
   request?: any;
   response?: axios.AxiosResponse<T, D>;
-  /** The original Node error (HTTP adapter) */
-  originalError?: unknown;
   /** The ProgressEvent raised by the browser (XHR adapter) */
   event?: ProgressEvent;
   isAxiosError: boolean;
   status?: number;
   toJSON: () => object;
-  cause?: Error;
+  cause?: unknown;
   static readonly ERR_FR_TOO_MANY_REDIRECTS = "ERR_FR_TOO_MANY_REDIRECTS";
   static readonly ERR_BAD_OPTION_VALUE = "ERR_BAD_OPTION_VALUE";
   static readonly ERR_BAD_OPTION = "ERR_BAD_OPTION";
