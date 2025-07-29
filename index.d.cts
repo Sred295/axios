@@ -16,6 +16,8 @@ type ContentType = axios.AxiosHeaderValue | 'text/html' | 'text/plain' | 'multip
 
 type CommonResponseHeadersList = 'Server' | 'Content-Type' | 'Content-Length' | 'Cache-Control'| 'Content-Encoding';
 
+type BrowserProgressEvent = any;
+
 declare class AxiosHeaders {
   constructor(
       headers?: RawAxiosHeaders | AxiosHeaders | string
@@ -98,7 +100,8 @@ declare class AxiosError<T = unknown, D = any> extends Error {
   isAxiosError: boolean;
   status?: number;
   toJSON: () => object;
-  cause?: Error;
+  cause?: unknown;
+  event?: BrowserProgressEvent;
   static from<T = unknown, D = any>(
     error: Error | unknown,
     code?: string,
@@ -351,8 +354,6 @@ declare namespace axios {
   type MaxUploadRate = number;
 
   type MaxDownloadRate = number;
-
-  type BrowserProgressEvent = any;
 
   interface AxiosProgressEvent {
     loaded: number;
