@@ -1628,7 +1628,7 @@ Also, it supports additional response types such as `stream` and `formdata` (if 
 
 ## Semver
 
-Until axios reaches a `1.0` release, breaking changes will be released with a new minor version. For example `0.5.1`, and `0.5.4` will have the same API, but `0.6.0` will have breaking changes.
+Since Axios has reached a `v.1.0.0` we will fully embrace semver as per the spec [here](https://semver.org/)
 
 ## Promises
 
