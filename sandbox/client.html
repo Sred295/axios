@@ -29,7 +29,7 @@
 </head>
 <body class="container">
 <div class="header">
-  <img src="https://axios-http.com/assets/logo.svg" alt="axios" width="130" height="60">
+  <img src="https://axios-http.com/assets/logo.svg" alt="axios" width="100" height="60">
   <h1> &nbsp;| Sandbox</h1>
 </div>
 
@@ -111,7 +111,7 @@
       try {
         return params.value.length === 0 ? null : JSON.parse(params.value);
       } catch (e) {
-        error.innerHTML = "Invalid JSON in Params";
+        error.textContent = "Invalid JSON in Params";
         return null;
       }
     }
@@ -120,7 +120,7 @@
       try {
         return data.value.length === 0 ? null : JSON.parse(data.value);
       } catch (e) {
-        error.innerHTML = "Invalid JSON in Data";
+        error.textContent = "Invalid JSON in Data";
         return null;
       }
     }
@@ -129,7 +129,7 @@
       try {
         return headers.value.length === 0 ? null : JSON.parse(headers.value);
       } catch (e) {
-        error.innerHTML = "Invalid JSON in Headers";
+        error.textContent = "Invalid JSON in Headers";
         return null;
       }
     }
@@ -161,7 +161,7 @@
       event.preventDefault();
 
       if (url.value === '') {
-        error.innerHTML = 'Please enter a valid URL';
+        error.textContent = 'Please enter a valid URL';
         return;
       }
 
@@ -173,19 +173,19 @@
         headers: getHeaders()
       };
 
-      request.innerHTML = JSON.stringify(options, null, 2);
+      request.textContent = JSON.stringify(options, null, 2);
 
       axios(options)
         .then(function (res) {
           response.innerHTML = JSON.stringify(res.data, null, 2);
-          error.innerHTML = "None";
+          error.textContent = "None";
         })
         .catch(function (err) {
           if (err.response) {
-            error.innerHTML = JSON.stringify(err.response.data, null, 2);
+            error.textContent = JSON.stringify(err.response.data, null, 2);
             response.innerHTML = "Error in Response";
           } else {
-            error.innerHTML = err.message;
+            error.textContent = err.message;
             response.innerHTML = "No Response Data";
           }
         });
