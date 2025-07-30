@@ -2,7 +2,7 @@
 import assert from 'assert';
 import https from 'https';
 import net from 'net';
-import {readFile} from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import axios from '../../../index.js';
@@ -51,7 +51,8 @@ describe('adapters – network-error details', function () {
     const keyPath  = path.join(__dirname, 'key.pem');
     const certPath = path.join(__dirname, 'cert.pem');
 
-    const [key, cert] = await Promise.all([readFile(keyPath), readFile(certPath)]);
+    const key = fs.readFileSync(keyPath);
+    const cert = fs.readFileSync(certPath);
 
     const httpsServer = https.createServer({ key, cert }, (req, res) => res.end('ok'));
 
