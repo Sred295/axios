@@ -1,5 +1,4 @@
 import axios, {
-  InternalAxiosRequestConfig,
   AxiosRequestConfig,
   AxiosHeaders,
   AxiosRequestHeaders,
@@ -27,6 +26,7 @@ const config: AxiosRequestConfig = {
   url: '/user',
   method: 'get',
   baseURL: 'https://api.example.com/',
+  allowAbsoluteUrls: false,
   transformRequest: (data: any) => '{"foo":"bar"}',
   transformResponse: [
     (data: any) => ({ baz: 'qux' })
@@ -236,7 +236,7 @@ axios.request<User, string>({
 // Instances
 
 const instance1: AxiosInstance = axios.create();
-const instance2: AxiosInstance = axios.create(config);
+const instance2: AxiosInstance = instance1.create(config);
 
 instance1(config)
     .then(handleResponse)
@@ -626,7 +626,7 @@ for (const [header, value] of headers) {
   headers.get('x');
 })();
 
-// AxiosHeaders instance assigment
+// AxiosHeaders instance assignment
 
 {
   const requestInterceptorId: number = axios.interceptors.request.use(
