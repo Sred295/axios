@@ -2334,20 +2334,19 @@ describe('supports http with nodejs', function () {
   });
 
   describe('config.method handling', function () {
-    it('should throw TypeError when config.method is undefined', async function () {
+    it('should handle undefined config.method gracefully', async function () {
       server = await startHTTPServer();
       
       const httpAdapter = (await import('../../../lib/adapters/http.js')).default;
       
       const config = {
         url: 'http://localhost:4444',
-        method: undefined // This will cause the TypeError
+        method: undefined // This should default to GET
       };
 
-      // This should throw a TypeError: Cannot read properties of undefined
-      await assert.rejects(async () => {
-        await httpAdapter(config);
-      }, /TypeError.*toUpperCase|Cannot read properties of undefined/);
+      // This should not throw an error and should default to GET method
+      const response = await httpAdapter(config);
+      assert.ok(response);
     });
   });
 });
