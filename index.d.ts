@@ -74,6 +74,8 @@ export class AxiosHeaders {
   getAuthorization(matcher?: AxiosHeaderMatcher): AxiosHeaderValue;
   hasAuthorization(matcher?: AxiosHeaderMatcher): boolean;
 
+  getSetCookie(): string[];
+
   [Symbol.iterator](): IterableIterator<[string, AxiosHeaderValue]>;
 }
 
@@ -300,7 +302,7 @@ export interface AxiosProgressEvent {
 
 type Milliseconds = number;
 
-type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | string;
+type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | (string & {});
 
 type AxiosAdapterConfig = AxiosAdapter | AxiosAdapterName;
 
@@ -317,6 +319,7 @@ export interface AxiosRequestConfig<D = any> {
   url?: string;
   method?: Method | string;
   baseURL?: string;
+  allowAbsoluteUrls?: boolean;
   transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
   transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[];
   headers?: (RawAxiosRequestHeaders & MethodsHeaders) | AxiosHeaders;
@@ -359,7 +362,7 @@ export interface AxiosRequestConfig<D = any> {
       ((hostname: string, options: object) => Promise<[address: LookupAddressEntry | LookupAddressEntry[], family?: AddressFamily] | LookupAddress>);
   withXSRFToken?: boolean | ((config: InternalAxiosRequestConfig) => boolean | undefined);
   parseReviver?: (this: any, key: string, value: any) => any;
-  fetchOptions?: Record<string, any>;
+  fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
 }
 
 // Alias
@@ -416,7 +419,8 @@ export class AxiosError<T = unknown, D = any> extends Error {
   isAxiosError: boolean;
   status?: number;
   toJSON: () => object;
-  cause?: Error;
+  cause?: unknown;
+  event?: BrowserProgressEvent;
   static from<T = unknown, D = any>(
     error: Error | unknown,
     code?: string,
@@ -440,6 +444,7 @@ export class AxiosError<T = unknown, D = any> extends Error {
 }
 
 export class CanceledError<T> extends AxiosError<T> {
+  readonly name: "CanceledError";
 }
 
 export type AxiosPromise<T = any> = Promise<AxiosResponse<T>>;
@@ -477,8 +482,12 @@ export interface AxiosInterceptorOptions {
   runWhen?: (config: InternalAxiosRequestConfig) => boolean;
 }
 
+type AxiosRequestInterceptorUse<T> = (onFulfilled?: ((value: T) => T | Promise<T>) | null, onRejected?: ((error: any) => any) | null, options?: AxiosInterceptorOptions) => number;
+
+type AxiosResponseInterceptorUse<T> = (onFulfilled?: ((value: T) => T | Promise<T>) | null, onRejected?: ((error: any) => any) | null) => number;
+
 export interface AxiosInterceptorManager<V> {
-  use(onFulfilled?: ((value: V) => V | Promise<V>) | null, onRejected?: ((error: any) => any) | null, options?: AxiosInterceptorOptions): number;
+  use: V extends AxiosResponse ? AxiosResponseInterceptorUse<V> : AxiosRequestInterceptorUse<V>;
   eject(id: number): void;
   clear(): void;
 }
@@ -508,6 +517,7 @@ export interface AxiosInstance extends Axios {
   <T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>): Promise<R>;
   <T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
 
+  create(config?: CreateAxiosDefaults): AxiosInstance;
   defaults: Omit<AxiosDefaults, 'headers'> & {
     headers: HeadersDefaults & {
       [key: string]: AxiosHeaderValue
@@ -535,14 +545,13 @@ export function isAxiosError<T = any, D = any>(payload: any): payload is AxiosEr
 
 export function spread<T, R>(callback: (...args: T[]) => R): (array: T[]) => R;
 
-export function isCancel(value: any): value is Cancel;
+export function isCancel<T = any>(value: any): value is CanceledError<T>;
 
 export function all<T>(values: Array<T | Promise<T>>): Promise<T[]>;
 
 export function mergeConfig<D = any>(config1: AxiosRequestConfig<D>, config2: AxiosRequestConfig<D>): AxiosRequestConfig<D>;
 
 export interface AxiosStatic extends AxiosInstance {
-  create(config?: CreateAxiosDefaults): AxiosInstance;
   Cancel: CancelStatic;
   CancelToken: CancelTokenStatic;
   Axios: typeof Axios;
