@@ -12,7 +12,6 @@ import axios from '../../../index.js';
 import stream from "stream";
 import { AbortController } from "abortcontroller-polyfill/dist/cjs-ponyfill.js";
 import util from "util";
-import { expect } from "chai";
 
 const pipelineAsync = util.promisify(stream.pipeline);
 
@@ -403,7 +402,7 @@ describe('supports fetch with nodejs', function () {
   
       server = await startHTTPServer((req, res) => {
         const contentType = req.headers['content-type'];
-        expect(contentType).to.match(/^multipart\/form-data; boundary=/i);
+        assert.match(contentType, /^multipart\/form-data; boundary=/i);
         res.end('OK');
       });
   
