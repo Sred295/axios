@@ -1,4 +1,4 @@
-// axios v0.28.1 Copyright (c) 2024 Matt Zabriskie
+// axios v0.30.1 Copyright (c) 2025 Matt Zabriskie
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -625,7 +625,7 @@
   var AxiosError_1 = AxiosError;
 
   /* eslint-env browser */
-  var browser$1 = typeof self == 'object' ? self.FormData : window.FormData;
+  var browser$1 = typeof self === 'object' ? self.FormData : window.FormData;
 
   // eslint-disable-next-line strict
   var FormData$1 = browser$1;
@@ -744,7 +744,7 @@
           key = removeBrackets(key);
 
           arr.forEach(function each(el, index) {
-            !utils.isUndefined(el) && formData.append(
+            !(utils.isUndefined(el) || el === null) && formData.append(
               // eslint-disable-next-line no-nested-ternary
               indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
               convertValue(el)
@@ -781,7 +781,7 @@
       stack.push(value);
 
       utils.forEach(value, function each(el, key) {
-        var result = !utils.isUndefined(el) && visitor.call(
+        var result = !(utils.isUndefined(el) || el === null) && visitor.call(
           formData, el, utils.isString(key) ? key.trim() : key, path, exposedHelpers
         );
 
@@ -1024,6 +1024,9 @@
   function formDataToJSON(formData) {
     function buildPath(path, value, target, index) {
       var name = path[index++];
+
+      if (name === '__proto__') return true;
+
       var isNumericKey = Number.isFinite(+name);
       var isLast = index >= path.length;
       name = !name && utils.isArray(target) ? target.length : name;
@@ -1160,7 +1163,7 @@
    */
   var combineURLs = function combineURLs(baseURL, relativeURL) {
     return relativeURL
-      ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+      ? baseURL.replace(/\/?\/$/, '') + '/' + relativeURL.replace(/^\/+/, '')
       : baseURL;
   };
 
@@ -1171,10 +1174,13 @@
    *
    * @param {string} baseURL The base URL
    * @param {string} requestedURL Absolute or relative URL to combine
+   * @param {boolean} allowAbsoluteUrls Set to true to allow absolute URLs
+   *
    * @returns {string} The combined full path
    */
-  var buildFullPath = function buildFullPath(baseURL, requestedURL) {
-    if (baseURL && !isAbsoluteURL(requestedURL)) {
+  var buildFullPath = function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
+    var isRelativeURL = !isAbsoluteURL(requestedURL);
+    if (baseURL && (isRelativeURL || allowAbsoluteUrls === false)) {
       return combineURLs(baseURL, requestedURL);
     }
     return requestedURL;
@@ -1350,7 +1356,7 @@
         requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
       }
 
-      var fullPath = buildFullPath(config.baseURL, config.url);
+      var fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
 
       request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
@@ -1907,7 +1913,7 @@
   };
 
   var data = {
-    "version": "0.28.1"
+    "version": "0.30.1"
   };
 
   var VERSION = data.version;
@@ -2048,14 +2054,18 @@
 
     var paramsSerializer = config.paramsSerializer;
 
-    if (paramsSerializer !== undefined) {
-      validator.assertOptions(paramsSerializer, {
-        encode: validators.function,
-        serialize: validators.function
-      }, true);
+    if (paramsSerializer != null) {
+      if (utils.isFunction(paramsSerializer)) {
+        config.paramsSerializer = {
+          serialize: paramsSerializer
+        };
+      } else {
+        validator.assertOptions(paramsSerializer, {
+          encode: validators.function,
+          serialize: validators.function
+        }, true);
+      }
     }
-
-    utils.isFunction(paramsSerializer) && (config.paramsSerializer = {serialize: paramsSerializer});
 
     // filter out skipped interceptors
     var requestInterceptorChain = [];
@@ -2119,7 +2129,7 @@
 
   Axios.prototype.getUri = function getUri(config) {
     config = mergeConfig(this.defaults, config);
-    var fullPath = buildFullPath(config.baseURL, config.url);
+    var fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
     return buildURL(fullPath, config.params, config.paramsSerializer);
   };
 
