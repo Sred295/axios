@@ -399,14 +399,83 @@ describe('supports fetch with nodejs', function () {
       const FormData = (await import('form-data')).default; // Node FormData
       const form = new FormData();
       form.append('foo', 'bar');
-  
+
       server = await startHTTPServer((req, res) => {
         const contentType = req.headers['content-type'];
         assert.match(contentType, /^multipart\/form-data; boundary=/i);
         res.end('OK');
       });
-  
+
       await fetchAxios.post('/form', form);
     });
-  });  
+  });
+
+  describe('env config', () => {
+    it('should respect env fetch API configuration', async() => {
+      const { data, headers } = await fetchAxios.get('/', {
+        env: {
+          fetch() {
+            return {
+              headers: {
+                foo: '1'
+              },
+              text: async () => 'test'
+            }
+          }
+        }
+      });
+
+      assert.strictEqual(headers.get('foo'), '1');
+      assert.strictEqual(data, 'test');
+    });
+
+    it('should be able to request with lack of Request object', async() => {
+      const form = new FormData();
+
+      form.append('x', '1');
+
+      const { data, headers } = await fetchAxios.post('/', form, {
+        onUploadProgress() {
+          // dummy listener to activate streaming
+        },
+        env: {
+          Request: null,
+          fetch() {
+            return {
+              headers: {
+                foo: '1'
+              },
+              text: async () => 'test'
+            }
+          }
+        }
+      });
+
+      assert.strictEqual(headers.get('foo'), '1');
+      assert.strictEqual(data, 'test');
+    });
+
+    it('should be able to handle response with lack of Response object', async() => {
+      const { data, headers } = await fetchAxios.get('/', {
+        onDownloadProgress() {
+          // dummy listener to activate streaming
+        },
+        env: {
+          Request: null,
+          Response: null,
+          fetch() {
+            return {
+              headers: {
+                foo: '1'
+              },
+              text: async () => 'test'
+            }
+          }
+        }
+      });
+
+      assert.strictEqual(headers.get('foo'), '1');
+      assert.strictEqual(data, 'test');
+    });
+  });
 });

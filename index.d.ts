@@ -355,6 +355,9 @@ export interface AxiosRequestConfig<D = any> {
   insecureHTTPParser?: boolean;
   env?: {
     FormData?: new (...args: any[]) => object;
+    fetch?: (input: URL | Request | string, init?: RequestInit) => Promise<Response>;
+    Request?: new (input: (RequestInfo | URL), init?: RequestInit) => Request;
+    Response?: new (body?: (BodyInit | null), init?: ResponseInit) => ResponseType;
   };
   formSerializer?: FormSerializerOptions;
   family?: AddressFamily;
