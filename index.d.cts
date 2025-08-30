@@ -425,7 +425,7 @@ declare namespace axios {
       FormData?: new (...args: any[]) => object;
       fetch?: (input: URL | Request | string, init?: RequestInit) => Promise<Response>;
       Request?: new (input: (RequestInfo | URL), init?: RequestInit) => Request;
-      Response?: new (body?: (BodyInit | null), init?: ResponseInit) => ResponseType;
+      Response?: new (body?: (BodyInit | null), init?: ResponseInit) => Response;
     };
     formSerializer?: FormSerializerOptions;
     family?: AddressFamily;

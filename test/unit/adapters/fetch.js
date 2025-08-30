@@ -477,5 +477,17 @@ describe('supports fetch with nodejs', function () {
       assert.strictEqual(headers.get('foo'), '1');
       assert.strictEqual(data, 'test');
     });
+
+    it('should fallback to the global on undefined env value', async() => {
+      server = await startHTTPServer((req, res) => res.end('OK'));
+
+      const { data } = await fetchAxios.get('/', {
+        env: {
+          fetch: undefined
+        }
+      });
+
+      assert.strictEqual(data, 'OK');
+    });
   });
 });
