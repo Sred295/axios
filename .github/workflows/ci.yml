@@ -59,5 +59,12 @@ jobs:
         if: steps.changed-ignored.outputs.only_modified == 'false'
       - run: npm run build
         if: steps.changed-ignored.outputs.only_modified == 'false'
-      - run: npm test
+      - name: Run Server tests
+        run: npm run test:node
         if: steps.changed-ignored.outputs.only_modified == 'false'
+    # We run browser tests only on one version of the node, since client tests do not depend on the server environment.
+      - name: Run browser tests
+        run: npm run test:browser
+        if: steps.changed-ignored.outputs.only_modified == 'false' && matrix.node-version == '22.x'
+      - name: Run package tests
+        run: npm run test:package

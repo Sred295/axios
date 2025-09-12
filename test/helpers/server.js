@@ -4,6 +4,7 @@ import getStream from "get-stream";
 import {Throttle} from "stream-throttle";
 import formidable from "formidable";
 
+
 export const LOCAL_SERVER_URL = 'http://localhost:4444';
 
 export const SERVER_HANDLER_STREAM_ECHO = (req, res) => req.pipe(res);
@@ -115,3 +116,72 @@ export const makeEchoStream = (echo) => new WritableStream({
     echo && console.log(`Echo chunk`, chunk);
   }
 })
+
+
+export const startTestServer = async (port) => {
+  const handler = async (req) => {
+    const parsed = new URL(req.url, `http://localhost:${port}`);
+
+    const params = Object.fromEntries(parsed.searchParams);
+
+    let response = {
+      url: req.url,
+      pathname: parsed.pathname,
+      params,
+      method: req.method,
+      headers: req.headers,
+    }
+
+    const contentType = req.headers['content-type'] || '';
+
+    const {delay = 0} = params;
+
+    if (+delay) {
+      await setTimeoutAsync(+delay);
+    }
+
+    switch (parsed.pathname.replace(/\/$/, '')) {
+      case '/echo/json':
+      default:
+        if (contentType.startsWith('multipart/')) {
+          let {fields, files} = await handleFormData(req);
+          response.form = fields;
+          response.files = files;
+        } else {
+          response.body = (await getStream(req, {encoding: 'buffer'})).toString('hex');
+        }
+
+        return {
+          body: response
+        }
+    }
+  };
+
+  return await startHTTPServer((req, res) => {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', `*`); // Allows all origins, or specify a domain like 'http://example.com'
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allowed HTTP methods
+    res.setHeader('Access-Control-Allow-Headers', '*'); // Allowed request headers
+    res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight requests for 24 hours
+
+    // Handle preflight requests (OPTIONS method)
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204); // No content
+      res.end();
+      return;
+    }
+
+    Promise.resolve(handler(req, res)).then(response=>{
+      const {status = 200, headers = {}, body} = response || {};
+
+
+      res.statusCode = status;
+
+      Object.entries(headers).forEach((header, value) => {
+        res.setHeader(header, value);
+      });
+
+      res.end(JSON.stringify(body, null, 2))
+    })
+  }, {port});
+}
