@@ -305,7 +305,7 @@ declare namespace axios {
   }
 
   // Fallback/body type union for environments where the DOM lib (and BodyInit) is not available
-  export type AxiosBodyInit =
+  type AxiosBodyInit =
     | string
     | ArrayBuffer
     | ArrayBufferView
