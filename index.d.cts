@@ -304,6 +304,16 @@ declare namespace axios {
     clarifyTimeoutError?: boolean;
   }
 
+  // Fallback/body type union for environments where the DOM lib (and BodyInit) is not available
+  export type AxiosBodyInit =
+    | string
+    | ArrayBuffer
+    | ArrayBufferView
+    | Blob
+    | FormData
+    | URLSearchParams
+    | ReadableStream<Uint8Array>;
+
   interface GenericAbortSignal {
     readonly aborted: boolean;
     onabort?: ((...args: any) => any) | null;
@@ -424,8 +434,8 @@ declare namespace axios {
     env?: {
       FormData?: new (...args: any[]) => object;
       fetch?: (input: URL | Request | string, init?: RequestInit) => Promise<Response>;
-      Request?: new (input: (RequestInfo | URL), init?: RequestInit) => Request;
-      Response?: new (body?: (BodyInit | null), init?: ResponseInit) => Response;
+      Request?: new (input: (URL | Request | string), init?: RequestInit) => Request;
+      Response?: new (body?: (AxiosBodyInit | null), init?: ResponseInit) => Response;
     };
     formSerializer?: FormSerializerOptions;
     family?: AddressFamily;
