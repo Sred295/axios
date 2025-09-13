@@ -89,8 +89,8 @@
   },
   "homepage": "https://axios-http.com",
   "devDependencies": {
-    "@babel/core": "^7.28.4",
-    "@babel/preset-env": "^7.28.3",
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
     "@commitlint/cli": "^17.8.1",
     "@commitlint/config-conventional": "^17.8.1",
     "@release-it/conventional-changelog": "^5.1.1",
