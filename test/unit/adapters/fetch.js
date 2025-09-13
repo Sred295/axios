@@ -489,5 +489,32 @@ describe('supports fetch with nodejs', function () {
 
       assert.strictEqual(data, 'OK');
     });
+
+    it('should use current global fetch when env fetch is not specified', async() => {
+      const globalFetch = fetch;
+
+      fetch = async () => {
+        return {
+          headers: {
+            foo: '1'
+          },
+          text: async () => 'global'
+        }
+      };
+
+      try {
+        server = await startHTTPServer((req, res) => res.end('OK'));
+
+        const {data} = await fetchAxios.get('/', {
+          env: {
+            fetch: undefined
+          }
+        });
+
+        assert.strictEqual(data, 'global');
+      } finally {
+        fetch = globalFetch;
+      }
+    });
   });
 });
