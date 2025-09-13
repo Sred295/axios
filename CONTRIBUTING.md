@@ -24,8 +24,6 @@ Please update the [documentation](https://axios-http.com/docs/intro) accordingly
 - `npm run build` run rollup and bundle the source
 - `npm run version` prepare the code for release
 
-Please don't include changes to `dist/` in your pull request. This should only be updated when releasing a new version.
-
 ## Running Examples
 
 Examples are included in part to allow manual testing.
