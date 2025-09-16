@@ -68,3 +68,4 @@ jobs:
         if: steps.changed-ignored.outputs.only_modified == 'false' && matrix.node-version == '22.x'
       - name: Run package tests
         run: npm run test:package
+        if: steps.changed-ignored.outputs.only_modified == 'false'
