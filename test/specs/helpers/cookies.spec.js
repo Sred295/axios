@@ -11,26 +11,26 @@ describe('helpers::cookies', function () {
     });
   });
 
-  it('should write cookies', function () {
-    cookies.write('foo', 'baz');
+  it('should write cookies', async function () {
+    await cookies.write('foo', 'baz');
     expect(document.cookie).toEqual('foo=baz');
   });
 
-  it('should read cookies', function () {
-    cookies.write('foo', 'abc');
-    cookies.write('bar', 'def');
-    expect(cookies.read('foo')).toEqual('abc');
-    expect(cookies.read('bar')).toEqual('def');
+  it('should read cookies', async function () {
+    await cookies.write('foo', 'abc');
+    await cookies.write('bar', 'def');
+    expect(await cookies.read('foo')).toEqual('abc');
+    expect(await cookies.read('bar')).toEqual('def');
   });
 
-  it('should remove cookies', function () {
-    cookies.write('foo', 'bar');
-    cookies.remove('foo');
-    expect(cookies.read('foo')).toEqual(null);
+  it('should remove cookies', async function () {
+    await cookies.write('foo', 'bar');
+    await cookies.remove('foo');
+    expect(await cookies.read('foo')).toEqual(null);
   });
 
-  it('should uri encode values', function () {
-    cookies.write('foo', 'bar baz%');
+  it('should uri encode values', async function () {
+    await cookies.write('foo', 'bar baz%');
     expect(document.cookie).toEqual('foo=bar%20baz%25');
   });
 });
