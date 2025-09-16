@@ -16,7 +16,7 @@
 <!--<div>marker</div>-->
 <br><br>
 <div align="center">
-   <a href="https://axios-http.com"><img src="https://axios-http.com/assets/logo.svg" /></a><br>
+   <a href="https://axios-http.com"><img src="https://axios-http.com/assets/logo.svg" alt="Axios" /></a><br>
 </div>
 
 <p align="center">Promise based HTTP client for the browser and node.js</p>
