@@ -203,19 +203,12 @@ Using unpkg CDN:
 import axios from 'axios';
 //const axios = require('axios'); // legacy way
 
-// Make a request for a user with a given ID
-axios.get('/user?ID=12345')
-  .then(function (response) {
-    // handle success
-    console.log(response);
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-  })
-  .finally(function () {
-    // always executed
-  });
+try {
+  const response = await axios.get('/user?ID=12345');
+  console.log(response);
+} catch (error) {
+  console.error(error);
+}
 
 // Optionally the request above could also be done as
 axios.get('/user', {
@@ -250,16 +243,11 @@ async function getUser() {
 Performing a `POST` request
 
 ```js
-axios.post('/user', {
-    firstName: 'Fred',
-    lastName: 'Flintstone'
-  })
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+const response = await axios.post('/user', {
+  firstName: 'Fred',
+  lastName: 'Flintstone'
+});
+console.log(response);
 ```
 
 Performing multiple concurrent requests
@@ -300,14 +288,12 @@ axios({
 
 ```js
 // GET request for remote image in node.js
-axios({
+const response = await axios({
   method: 'get',
   url: 'https://bit.ly/2mTM3nY',
   responseType: 'stream'
-})
-  .then(function (response) {
-    response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-  });
+});
+response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
 ```
 
 ##### axios(url[, config])
@@ -668,14 +654,12 @@ The response for a request contains the following information.
 When using `then`, you will receive the response as follows:
 
 ```js
-axios.get('/user/12345')
-  .then(function (response) {
-    console.log(response.data);
-    console.log(response.status);
-    console.log(response.statusText);
-    console.log(response.headers);
-    console.log(response.config);
-  });
+const response = await axios.get('/user/12345')
+console.log(response.data);
+console.log(response.status);
+console.log(response.statusText);
+console.log(response.headers);
+console.log(response.config);
 ```
 
 When using `catch`, or passing a [rejection callback](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) as second parameter of `then`, the response will be available through the `error` object as explained in the [Handling Errors](#handling-errors) section.
@@ -729,7 +713,8 @@ instance.get('/longRequest', {
 
 ## Interceptors
 
-You can intercept requests or responses before they are handled by `then` or `catch`.
+You can intercept requests or responses before methods like `.get()` or `.post()`
+resolve their promises (before code inside `then` or `catch`, or after `await`)
 
 ```js
 
