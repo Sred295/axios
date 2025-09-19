@@ -370,7 +370,7 @@ declare namespace axios {
 
   type Milliseconds = number;
 
-  type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | (string & {});
+  type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | 'http2' | (string & {});
 
   type AxiosAdapterConfig = AxiosAdapter | AxiosAdapterName;
 
