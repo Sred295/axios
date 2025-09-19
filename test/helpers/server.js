@@ -65,7 +65,7 @@ export const stopHTTPServer = async (server, timeout = 10000) => {
   }
 }
 
-const generatedCertificate = selfsigned.generate();
+const generatedCertificate = selfsigned.generate(null, { keySize: 2048 });
 const activeSessions = new Set();
 
 export const startHTTP2Server = (handlerOrOptions, options) => {
