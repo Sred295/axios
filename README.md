@@ -1700,6 +1700,28 @@ export async function load({ fetch }) {
 }
 ```
 
+## 🔥 Http2 adapter
+
+⚠️ Experimental: The http2 adapter is currently experimental and supports only a limited set of features: JSON responses, timeout handling, authentication, headers, and query parameters.
+
+To use it by default, it must be selected explicitly:
+
+```js
+const {data} = await axios.get(url, {
+  adapter: 'http2' // by default ['xhr', 'http', 'fetch', 'http2']
+})
+```
+
+You can create a separate instance for this:
+
+```js
+const http2Axios = axios.create({
+  adapter: 'http2'
+});
+
+const {data} = await http2Axios.get(url);
+```
+
 ## Semver
 
 Since Axios has reached a `v.1.0.0` we will fully embrace semver as per the spec [here](https://semver.org/)
