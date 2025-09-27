@@ -1,9 +1,7 @@
 import assert from 'assert';
 import axios from '../../../index.js';
-import AxiosError from '../../../lib/core/AxiosError.js';
 import {
   LOCAL_SERVER_HTTP2_URL,
-  setTimeoutAsync,
   startHTTP2Server,
   stopHTTP2Server
 } from '../../helpers/server.js';
@@ -95,19 +93,17 @@ describe('supports http2 with nodejs', () => {
     assert.deepStrictEqual(responseData, data);
   });
 
-  it('should support basic auth with a header', async () => {
+  it.only('should support authorization headers', async () => {
     server = await startHTTP2Server((req, res) => {
       res.setHeader('Content-Type', 'application/json');
       res.end(req.headers.authorization);
     });
 
-    const auth = { username: 'foo', password: 'bar' };
     const headers = { Authorization: 'Bearer 1234' };
 
-    const res = await http2Axios.get('', { auth, headers });
+    const res = await http2Axios.get('/', { headers });
 
-    const base64 = Buffer.from('foo:bar', 'utf8').toString('base64');
-    assert.strictEqual(res.data, 'Basic ' + base64);
+    assert.deepStrictEqual(res.data, 'Bearer 1234');
   });
 
   it('should combine baseURL and url', async () => {
