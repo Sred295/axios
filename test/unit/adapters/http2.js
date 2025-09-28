@@ -47,33 +47,34 @@ describe('supports http2 with nodejs', () => {
     assert.deepStrictEqual(data, originalData);
   });
 
-  describe('timeout', () => {
+  it('should respect the timeout property', async function () {
+    if (typeof AbortController !== 'function') {
+      this.skip();
+    }
 
-    it('should respect the timeout property', async () => {
-      server = await startHTTP2Server((req, res) => {
-        setTimeout(() => {
-          res.end();
-        }, 1000);
-      });
-
-      let success = false, failure = false;
-      let error;
-
-      try {
-        await http2Axios.get('/', {
-          timeout: 250
-        });
-        success = true;
-      } catch (err) {
-        error = err;
-        failure = true;
-      }
-
-      assert.strictEqual(success, false, 'request should not succeed');
-      assert.strictEqual(failure, true, 'request should fail');
-      assert.strictEqual(error.code, 'ABORT_ERR');
-      assert.strictEqual(error.message, 'The operation was aborted');
+    server = await startHTTP2Server((req, res) => {
+      setTimeout(() => {
+        res.end();
+      }, 1000);
     });
+
+    let success = false, failure = false;
+    let error;
+
+    try {
+      await http2Axios.get('/', {
+        timeout: 250
+      });
+      success = true;
+    } catch (err) {
+      error = err;
+      failure = true;
+    }
+
+    assert.strictEqual(success, false, 'request should not succeed');
+    assert.strictEqual(failure, true, 'request should fail');
+    assert.strictEqual(error.code, 'ABORT_ERR');
+    assert.strictEqual(error.message, 'The operation was aborted');
   });
 
   it('should allow passing JSON', async () => {
