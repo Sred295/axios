@@ -93,7 +93,7 @@ describe('supports http2 with nodejs', () => {
     assert.deepStrictEqual(responseData, data);
   });
 
-  it.only('should support authorization headers', async () => {
+  it('should support authorization headers', async () => {
     server = await startHTTP2Server((req, res) => {
       res.setHeader('Content-Type', 'application/json');
       res.end(req.headers.authorization);
