@@ -119,7 +119,6 @@
     "get-stream": "^3.0.0",
     "gulp": "^4.0.2",
     "handlebars": "^4.7.8",
-    "http2-wrapper": "^2.2.1",
     "husky": "^8.0.3",
     "istanbul-instrumenter-loader": "^3.0.1",
     "jasmine-core": "^2.99.1",
