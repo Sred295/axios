@@ -80,7 +80,7 @@
   - [Files Posting](#files-posting)
   - [HTML Form Posting](#-html-form-posting-browser)
   - [🆕 Progress capturing](#-progress-capturing)
-  - [🆕 Rate limiting](#-progress-capturing)
+  - [🆕 Rate limiting](#-rate-limiting)
   - [🆕 AxiosHeaders](#-axiosheaders)
   - [🔥 Fetch adapter](#-fetch-adapter)
     - [🔥 Custom fetch](#-custom-fetch)
