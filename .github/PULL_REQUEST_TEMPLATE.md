@@ -1,13 +1,38 @@
 <!-- Click "Preview" for a more readable version -->
 
-#### Instructions
+## Description of Changes
 
-Please read and follow the instructions before creating and submitting a pull request:
+Please provide a clear and concise description of the changes introduced by this pull request.  What problem does it solve, or what feature does it add?
 
-- Create an issue explaining the feature. It could save you some effort in case we don't consider it should be included in axios.
-- If you're fixing a bug, try to commit the failing test/s and the code fixing it in different commits.
-- Ensure you're following our [contributing guide](https://github.com/axios/axios/blob/master/CONTRIBUTING.md).
+## Related Issues
 
-**⚠️👆 Delete the instructions before submitting the pull request 👆⚠️**
+Does this PR address any existing issues? If so, please link them here:
 
-Describe your pull request here.
+Fixes #
+
+## Screenshots (if applicable)
+
+If this PR includes visual changes, please provide screenshots or animated GIFs to demonstrate the changes.  This is especially helpful for UI-related PRs.
+
+## Type of Change
+
+Please check the relevant option(s):
+
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] Feature (new functionality)
+- [ ] Enhancement (improvement to existing functionality)
+- [ ] Documentation (changes to documentation only)
+- [ ] Refactor (code changes that don't affect functionality)
+- [ ] Performance improvement
+- [ ] Other (please describe): ____________
+
+## Checklist
+
+Please ensure the following before submitting your PR:
+
+- [ ] I have performed a self-review of my code.
+- [ ] My code follows the project's coding style guidelines (see [CONTRIBUTING.md](https://github.com/axios/axios/blob/master/CONTRIBUTING.md)).
+- [ ] I have added or updated documentation as necessary.
+- [ ] I have added unit tests to cover the changes (if applicable).
+- [ ] All tests pass.
+- [ ] I have checked for potential security vulnerabilities.

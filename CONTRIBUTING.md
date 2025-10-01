@@ -12,6 +12,8 @@ Please follow [conventional commits](https://www.conventionalcommits.org/en/v1.0
 
 ## Testing
 
+
+
 Please update the tests to reflect your code changes. Pull requests will not be accepted if they are failing on GitHub actions.
 
 ## Documentation
@@ -48,3 +50,8 @@ Running sandbox in terminal
 > npm start
 > node ./sandbox/client
 ```
+
+
+## Pull request
+
+[Axios Pull Request Template](https://github.com/axios/axios/blob/v1.x/.github/PULL_REQUEST_TEMPLATE.md)
