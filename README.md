@@ -1753,4 +1753,5 @@ axios is heavily inspired by the [$http service](https://docs.angularjs.org/api/
 
 ## License
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg?style=plastic)  
 [MIT](LICENSE)
