@@ -332,6 +332,8 @@ export interface AxiosRequestConfig<D = any> {
   adapter?: AxiosAdapterConfig | AxiosAdapterConfig[];
   auth?: AxiosBasicCredentials;
   responseType?: ResponseType;
+  openInBrowser?: boolean;
+  exposeBrowserUrl?: boolean;
   responseEncoding?: responseEncoding | string;
   xsrfCookieName?: string;
   xsrfHeaderName?: string;
@@ -407,6 +409,12 @@ export interface AxiosResponse<T = any, D = any, H = {}> {
   headers: H & RawAxiosResponseHeaders | AxiosResponseHeaders;
   config: InternalAxiosRequestConfig<D>;
   request?: any;
+  /** Object URL created for downloaded blob/arraybuffer (browser only). */
+  nativeUrl?: string;
+  /** Filename parsed from Content-Disposition when available. */
+  filename?: string;
+  /** Helper to revoke the created nativeUrl (if present). */
+  revokeNativeUrl?: () => void;
 }
 
 export class AxiosError<T = unknown, D = any> extends Error {
