@@ -13,7 +13,7 @@ const getWithRetry = (url, retries = 3) => {
   let counter = 0;
   const doRequest = async () => {
     try {
-      return await axios.get(url)
+      return await axios.get(url);
     } catch (err) {
       if (counter++ >= retries) {
         throw err;
@@ -21,39 +21,51 @@ const getWithRetry = (url, retries = 3) => {
       await new Promise(resolve => setTimeout(resolve, counter ** counter * 1000));
       return doRequest();
     }
-  }
-
+  };
   return doRequest();
+};
+
+const sanitizeSponsors = (rawContent) => {
+  const allowedPatterns = [
+    "github.com/sponsors/axios",
+    "opencollective.com/axios"
+  ];
+
+  return rawContent
+    .split("\n")
+    .filter(line => allowedPatterns.some(p => line.includes(p)))
+    .join("\n");
 };
 
 const updateReadmeSponsors = async (url, path, marker = '<!--<div>marker</div>-->') => {
   let fileContent = (await fs.readFile(path)).toString();
-
   const index = fileContent.indexOf(marker);
 
-  if(index >= 0) {
+  if (index >= 0) {
     const readmeContent = fileContent.slice(index);
 
-    let {data: sponsorContent} = await getWithRetry(url);
-    sponsorContent += '\n';
+    let { data: sponsorContent } = await getWithRetry(url);
+
+    sponsorContent = sanitizeSponsors(sponsorContent) + '\n';
 
     const currentSponsorContent = fileContent.slice(0, index);
 
     if (currentSponsorContent !== sponsorContent) {
-      console.log(colorize()`Sponsor block in [${path}] is outdated`);
+      console.log(colorize()`Sponsor block in [${path}] updated (spam removed / whitelist applied)`);
       await fs.writeFile(path, sponsorContent + readmeContent);
       return sponsorContent;
     } else {
-      console.log(colorize()`Sponsor block in [${path}] is up to date`);
+      console.log(colorize()`Sponsor block in [${path}] is already clean`);
     }
   } else {
-    console.warn(colorize()`Can not find marker (${marker}) in ${path} to inject sponsor block`);
+    console.warn(colorize()`Cannot find marker (${marker}) in ${path} to inject sponsor block`);
   }
 
   return false;
 };
 
-(async(url) => {
+
+(async (url) => {
   const newContent = await updateReadmeSponsors(url, './README.md');
 
   await exec(`echo "changed=${newContent ? 'true' : 'false'}" >> $GITHUB_OUTPUT`);
