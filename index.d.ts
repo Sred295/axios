@@ -409,11 +409,8 @@ export interface AxiosResponse<T = any, D = any, H = {}> {
   headers: H & RawAxiosResponseHeaders | AxiosResponseHeaders;
   config: InternalAxiosRequestConfig<D>;
   request?: any;
-  /** Object URL created for downloaded blob/arraybuffer (browser only). */
   nativeUrl?: string;
-  /** Filename parsed from Content-Disposition when available. */
   filename?: string;
-  /** Helper to revoke the created nativeUrl (if present). */
   revokeNativeUrl?: () => void;
 }
 
