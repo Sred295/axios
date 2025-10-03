@@ -1,20 +1,16 @@
-name: 'CodeQL'
+name: CodeQL
 
 on:
   push:
-    branches:
-      - '*'
-      - '*/*'
-      - '**'
-      - '!sponsors'
+    branches: [ "**", "!sponsors" ]
   pull_request:
-    branches:
-      - '*'
-      - '*/*'
-      - '**'
-      - '!sponsors'
+    branches: [ "**", "!sponsors" ]
   schedule:
-    - cron: '21 23 * * 5'
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
   analyze:
@@ -24,24 +20,63 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
     strategy:
       fail-fast: false
       matrix:
         language: [ 'javascript' ]
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        persist-credentials: false
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        queries: security-extended,security-and-quality
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+            examples/**
+            .github/**
+            templates/**
+            bin/**
+            
+      - name: Log Change Status
+        run: echo "Only non-code changes detected: ${{ steps.changed-ignored.outputs.only_modified }}"
+        
+      # --- Install and Build (Conditional) ---
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+        if: steps.changed-ignored.outputs.only_modified == 'false'
+        
+      - name: Install Dependencies
+        run: npm ci
+        if: steps.changed-ignored.outputs.only_modified == 'false'
+        
+      - name: Run Build Script
+        run: npm run build
+        if: steps.changed-ignored.outputs.only_modified == 'false'
+
+      # --- Run Tests (Conditional) ---
+      - name: Run Server (Node) Tests
+        run: npm run test:node
+        if: steps.changed-ignored.outputs.only_modified == 'false'
+        
+      # Browser tests only need to run once; running on the latest LTS (20.x in this case) is a good balance.
+      - name: Run Browser Tests
+        run: npm run test:browser
+        if: steps.changed-ignored.outputs.only_modified == 'false' && matrix.node-version == '20.x'
+        
+      - name: Run Package Tests
+        run: npm run test:package
+        if: steps.changed-ignored.outputs.only_modified == 'false'

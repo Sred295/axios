@@ -1,92 +1,74 @@
-name: '🤔 Support or Usage Question'
-description: Get help using Axios.
-labels: ['question']
+name: "🤔 Support or Usage Question"
+description: Please use community channels for questions. Use this only if directed by a maintainer.
+labels: ["support", "awaiting-answer"] # Labels to clearly mark this as non-bug/non-feature
 body:
   - type: markdown
     attributes:
-      value: 'Please read and follow the instructions before submitting an issue:'
+      value: "## 🛑 STOP! Read Before Submitting 🛑"
   - type: markdown
     attributes:
       value: |
-        - Read all our documentation, especially the [README](https://github.com/axios/axios/blob/master/README.md). It may contain information that helps you solve your issue.
-        - Ensure your issue isn't already [reported](https://github.com/axios/axios/issues?utf8=%E2%9C%93&q=is%3Aissue).
-        - If you aren't sure that the issue is caused by Axios or you just need help, please use [Stack Overflow](https://stackoverflow.com/questions/tagged/axios) or [our chat](https://gitter.im/mzabriskie/axios).
-        - If you're reporting a bug, ensure it isn't already fixed in the latest Axios version.
-  - type: markdown
-    attributes:
-      value: '⚠️👆 Feel free to delete these instructions before submitting the issue 👆⚠️'
+        The Axios issue tracker is primarily for **Bug Reports** and **Feature Requests**.
+
+        For general help, usage questions, and support, please use one of the community resources below for a faster response:
+
+        * **Stack Overflow:** [Search or ask a question using the `axios` tag](https://stackoverflow.com/questions/tagged/axios) (Recommended)
+        * **GitHub Discussions:** Check our project's Discussions tab (if available).
+
+        Issues filed here will likely be closed and redirected. **Only proceed if you believe your question is complex or you were explicitly asked to file an issue.**
+
   - type: textarea
     id: description
     attributes:
-      label: 'Describe the issue'
-      description: A clear and concise description of what the issue is.
+      label: "Your Question or Usage Scenario"
+      description: Describe your question, problem, or usage scenario clearly and concisely.
     validations:
       required: true
+
   - type: textarea
     id: example
     attributes:
-      label: 'Example Code'
-      description: Code snippet to illustrate your question
+      label: "Relevant Code Snippet"
+      description: Provide the specific code you are using that illustrates your question.
       render: js
     validations:
       required: false
+
   - type: textarea
     id: expected
     attributes:
-      label: 'Expected behavior'
-      description: A clear and concise description of what you expected to happen.
+      label: "What did you expect to happen?"
+      description: Explain the behavior you were trying to achieve.
     validations:
       required: false
+
   - type: markdown
     attributes:
-      value: Environment
+      value: "### Environment (Technical Context)"
+
   - type: input
     id: axios-version
     attributes:
-      label: 'Axios Version'
-      placeholder: 'e.g. 0.18.0'
-  - type: input
-    id: adapter-version
-    attributes:
-      label: 'Adapter Version'
-      placeholder: 'e.g. XHR/HTTP'
-  - type: input
-    id: browser
-    attributes:
-      label: 'Browser'
-      placeholder: 'e.g. Chrome, Safari'
-  - type: input
-    id: browser-version
-    attributes:
-      label: 'Browser Version'
-      placeholder: 'e.g. 42'
+      label: "Axios Version"
+      placeholder: "e.g. 1.6.7"
+
   - type: input
     id: node-version
     attributes:
-      label: 'Node.js Version'
-      description: 'node --version'
-      placeholder: 'e.g. 13.0.1'
+      label: "Node.js Version (if applicable)"
+      description: "node --version"
+      placeholder: "e.g. v20.12.2"
+
   - type: input
     id: os
     attributes:
-      label: 'OS'
-      placeholder: 'e.g. iOS 16.0.2, OSX 12.6.0'
-  - type: textarea
-    id: other-version
-    attributes:
-      label: 'Additional Library Versions'
-      placeholder: |
-        e.g.
-        React 16.7,
-        React Native 0.58.0
-      render: bash
-    validations:
-      required: false
+      label: "OS"
+      placeholder: "e.g. macOS 14.4, Windows 11"
+
   - type: textarea
     id: additional-context
     attributes:
-      label: 'Additional context/Screenshots'
-      description: Add any other context about the problem here. If applicable, add screenshots to help explain.
-      render: bash
+      label: "Additional Context/Screenshots"
+      description: Add any other context or screenshots that help explain your question.
     validations:
       required: false

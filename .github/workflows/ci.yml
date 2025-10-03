@@ -1,47 +1,45 @@
-name: 'CI'
+name: CI
 
 on:
   push:
+    # Trigger on all pushes to all branches, excluding the 'sponsors' branch
     branches:
-      - '*'
-      - '*/*'
       - '**'
       - '!sponsors'
   pull_request:
+    # Trigger on all pull requests, excluding the 'sponsors' branch
     branches:
-      - '*'
-      - '*/*'
       - '**'
       - '!sponsors'
 
 permissions:
-  contents: read
+  contents: read # Read-only permission is sufficient for running tests
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
+    # Define Node.js versions to test against (modern LTS and Current versions)
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x, 18.x, 20.x, 22.x, 24.x]
-      fail-fast: false
+        # Focusing on supported LTS (18, 20) and Current (22, 24) releases.
+        # Removed unsupported versions (12.x, 14.x, 16.x).
+        node-version: [18.x, 20.x, 22.x, 24.x] 
+      fail-fast: false # Run all matrix jobs regardless of failure
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v46
-      - name: List all changed files
-        run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
-      - name: Check changes
+      # --- Setup and Code Checkout ---
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        # Removed persist-credentials as it's not strictly necessary for read-only CI tests
+        
+      # --- Determine if only documentation/ignored files changed (Optimization) ---
+      # This check prevents running npm install/build/test if only non-code files (like MDs or examples) changed.
+      - name: Check for Code Changes
         id: changed-ignored
         uses: tj-actions/changed-files@v46
         with:
+          # Define files that, if ONLY they change, should skip the full build/test cycle
           files: |
             **.md
             sandbox/**
@@ -49,23 +47,36 @@ jobs:
             .github/**
             templates/**
             bin/**
-      - name: Setup node
+            
+      - name: Log Change Status
+        run: echo "Only non-code changes detected: ${{ steps.changed-ignored.outputs.only_modified }}"
+        
+      # --- Install and Build (Conditional) ---
+      - name: Setup Node ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
         if: steps.changed-ignored.outputs.only_modified == 'false'
-      - run: npm ci
+        
+      - name: Install Dependencies
+        run: npm ci
         if: steps.changed-ignored.outputs.only_modified == 'false'
-      - run: npm run build
+        
+      - name: Run Build Script
+        run: npm run build
         if: steps.changed-ignored.outputs.only_modified == 'false'
-      - name: Run Server tests
+
+      # --- Run Tests (Conditional) ---
+      - name: Run Server (Node) Tests
         run: npm run test:node
         if: steps.changed-ignored.outputs.only_modified == 'false'
-    # We run browser tests only on one version of the node, since client tests do not depend on the server environment.
-      - name: Run browser tests
+        
+      # Browser tests only need to run once; running on the latest LTS (20.x in this case) is a good balance.
+      - name: Run Browser Tests
         run: npm run test:browser
-        if: steps.changed-ignored.outputs.only_modified == 'false' && matrix.node-version == '22.x'
-      - name: Run package tests
+        if: steps.changed-ignored.outputs.only_modified == 'false' && matrix.node-version == '20.x'
+        
+      - name: Run Package Tests
         run: npm run test:package
         if: steps.changed-ignored.outputs.only_modified == 'false'
