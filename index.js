@@ -1,8 +1,7 @@
 import axios from './lib/axios.js';
 
-// This module is intended to unwrap Axios default export as named.
-// Keep top-level export same with static properties
-// so that it can keep same with es module or cjs
+// This module unwraps Axios default export into named exports.
+// It preserves static properties to match both ESM and CJS behavior.
 const {
   Axios,
   AxiosError,
@@ -20,7 +19,7 @@ const {
   formToJSON,
   getAdapter,
   mergeConfig
-} = axios;
+} = axios || {};
 
 export {
   axios as default,
@@ -40,4 +39,4 @@ export {
   formToJSON,
   getAdapter,
   mergeConfig
-}
+};
