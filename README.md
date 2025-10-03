@@ -70,6 +70,7 @@
   - [Cancellation](#cancellation)
     - [AbortController](#abortcontroller)
     - [CancelToken 👎](#canceltoken-deprecated)
+  - [🆕 Retries](#-retries)
   - [Using application/x-www-form-urlencoded format](#using-applicationx-www-form-urlencoded-format)
     - [URLSearchParams](#urlsearchparams)
     - [Query string](#query-string-older-browsers)
@@ -977,6 +978,88 @@ cancel();
 > If a cancellation token is already cancelled at the moment of starting an Axios request, then the request is cancelled immediately, without any attempts to make a real request.
 
 > During the transition period, you can use both cancellation APIs, even for the same request:
+
+## 🆕 Retries
+
+Axios provides an opt-in built-in retry mechanism with a configurable policy that works across `xhr`, `http`, and `fetch` adapters.
+
+Retries are disabled by default. Enable them per-instance or per-request.
+
+### Quick start
+
+```js
+// instance-level defaults
+const client = axios.create({
+  retry: {
+    retries: 2,
+    backoff: 'exponential',
+    jitter: 'full',
+    respectRetryAfter: true, // 429/503
+    methods: ['get', 'head', 'options', 'trace']
+  }
+});
+
+// per-request override
+await client.get('/resource', {
+  retry: { retries: 1, retryDelay: 250, shouldResetTimeout: true }
+});
+```
+
+### Options
+
+```ts
+interface RetryConfig {
+  retries?: number | ((error: any, attempt: number) => number);
+  retryDelay?: number | ((error: any, attempt: number, response?: AxiosResponse) => number);
+  retryCondition?: (error: any, attempt: number, response?: AxiosResponse) => boolean;
+  shouldResetTimeout?: boolean;
+  methods?: string[]; // default: GET, HEAD, OPTIONS, TRACE
+  respectRetryAfter?: boolean; // default: true
+  backoff?: 'exponential' | 'linear' | 'fixed' | 'none';
+  jitter?: 'full' | 'equal' | 'none';
+  maxRetryAfter?: number; // ms cap
+}
+```
+
+Defaults:
+- retries: 0 (disabled)
+- retryCondition: network errors (ERR_NETWORK, ECONNRESET, ETIMEDOUT, ENOTFOUND) and HTTP 429/503
+- retryDelay: exponential backoff with full jitter when no Retry-After
+- methods: GET, HEAD, OPTIONS, TRACE
+
+### Retry-After
+
+When `respectRetryAfter` is enabled, Axios will honor `Retry-After` on 429/503 responses.
+
+Supported formats:
+- Seconds: `Retry-After: 5`
+- HTTP-date: `Retry-After: Wed, 21 Oct 2015 07:28:00 GMT`
+
+Use `maxRetryAfter` to cap very long delays.
+
+### Timeouts and attempts
+
+- `shouldResetTimeout: false` keeps a single overall timeout budget across all attempts (default).
+- `shouldResetTimeout: true` gives each attempt the full `timeout` window.
+
+### Cancellation
+
+Retries are fully cancelable. If an `AbortSignal`/CancelToken is aborted during backoff or while an attempt is in-flight, Axios aborts immediately and no further attempts are made.
+
+```js
+const controller = new AbortController();
+
+axios.get('/slow', {
+  signal: controller.signal,
+  retry: { retries: 3, retryDelay: 1000 }
+}).catch(err => {
+  if (axios.isCancel(err)) {
+    console.log('Canceled');
+  }
+});
+
+setTimeout(() => controller.abort(), 150); // cancel during backoff
+```
 
 ## Using `application/x-www-form-urlencoded` format
 
