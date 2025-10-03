@@ -94,4 +94,49 @@ describe('adapter', function () {
       done();
     });
   });
+
+  describe('retry (xhr)', function () {
+    it('should retry 429 and succeed on second attempt', function (done) {
+      let hit = 0;
+
+      axios('/foo', {
+        retry: { retries: 1, retryDelay: 0, backoff: 'fixed', jitter: 'none' }
+      }).then(function (res) {
+        expect(res.status).toBe(200);
+        expect(hit).toBe(2);
+        done();
+      }).catch(done.fail);
+
+      getAjaxRequest().then(function (request) {
+        hit++;
+        request.respondWith({ status: 429, responseText: 'Too Many Requests', responseHeaders: { 'Retry-After': '0' } });
+
+        setTimeout(function () {
+          getAjaxRequest().then(function (request2) {
+            hit++;
+            request2.respondWith({ status: 200, responseText: 'OK' });
+          });
+        }, 0);
+      });
+    });
+
+    it('should cancel during backoff wait', function (done) {
+      const controller = new AbortController();
+
+      axios('/foo', {
+        signal: controller.signal,
+        retry: { retries: 2, retryDelay: 1000, backoff: 'fixed', jitter: 'none' }
+      }).then(function () {
+        done.fail('should not resolve');
+      }).catch(function (err) {
+        expect(axios.isCancel(err)).toBeTrue();
+        done();
+      });
+
+      getAjaxRequest().then(function (request) {
+        request.respondWith({ status: 503, responseText: 'Service Unavailable' });
+        setTimeout(function(){ controller.abort(); }, 10);
+      });
+    });
+  });
 });
