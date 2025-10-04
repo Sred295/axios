@@ -39,43 +39,56 @@ class RepoBot {
     return this.github.createComment(targetId, message);
   }
 
-  async notifyPRPublished(id, tag) {
-    let pr;
-
+  async _getPR(id) {
     try {
-      pr = await this.github.getPR(id);
+      return await this.github.getPR(id);
     } catch (err) {
-      if(err.response?.status === 404) {
+      if (err.response?.status === 404) {
         throw new Error(`PR #${id} not found (404)`);
       }
-
+      console.warn(colorize('red')`Failed to fetch PR #${id}: ${err.message}`);
       throw err;
     }
+  }
+
+  _hasBeenNotified(comments) {
+    return comments.some(
+      ({body, user}) => user.login === GITHUB_BOT_LOGIN && body.includes('published in')
+    );
+  }
+
+  async notifyPRPublished(id, tag) {
+    const pr = await this._getPR(id);
 
     tag = normalizeTag(tag);
 
     const {merged, labels, user: {login, type}} = pr;
 
+    if (!merged) {
+      console.log(colorize('yellow')`Skipping PR #${id}: not merged.`);
+      return false;
+    }
+
+    // Apply the release tag label regardless of notification status
+    await this.github.appendLabels(id, [tag]);
+
     const isBot = type === 'Bot';
 
     if (!merged) {
+      console.log(colorize('yellow')`Skipping PR #${id}: not merged.`);
       return false
     }
 
-    await this.github.appendLabels(id, [tag]);
-
     if (isBot || labels.find(({name}) => name === 'automated pr') || (skipCollaboratorPRs && await this.github.isCollaborator(login))) {
+      console.log(colorize('yellow')`Skipping notification for PR #${id}: automated or collaborator PR.`);
       return false;
     }
 
     const comments = await this.github.getComments(id, {desc: true});
 
-    const comment = comments.find(
-      ({body, user}) => user.login === GITHUB_BOT_LOGIN && body.indexOf('published in') >= 0
-    )
-
-    if (comment) {
-      console.log(colorize()`Release comment [${comment.html_url}] already exists in #${pr.id}`);
+    if (this._hasBeenNotified(comments)) {
+      const commentUrl = comments.find(({user}) => user.login === GITHUB_BOT_LOGIN)?.html_url;
+      console.log(colorize()`Release comment already exists for PR #${id}. ${commentUrl || ''}`);
       return false;
     }
 
@@ -112,7 +125,7 @@ class RepoBot {
 
     for (const pr of merges) {
       try {
-        console.log(colorize()`${i++}) Notify PR #${pr.id}`)
+        console.log(colorize()`${++i}) Notifying PR #${pr.id}...`);
         const result = await this.notifyPRPublished(pr.id, tag);
         console.log('✔️', result ? 'Label, comment' : 'Label');
       } catch (err) {
