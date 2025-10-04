@@ -199,7 +199,7 @@ Using unpkg CDN:
 
 ## Example
 
-> **Note**: CommonJS usage  
+> **Note**: CommonJS usage
 > In order to gain the TypeScript typings (for intellisense / autocomplete) while using CommonJS imports with `require()`, use the following approach:
 
 ```js
@@ -421,18 +421,18 @@ These are the available config options for making requests. Only the `url` is re
   params: {
     ID: 12345
   },
-  
-  // `paramsSerializer` is an optional config that allows you to customize serializing `params`. 
+
+  // `paramsSerializer` is an optional config that allows you to customize serializing `params`.
   paramsSerializer: {
 
     // Custom encoder function which sends key/value pairs in an iterative fashion.
-    encode?: (param: string): string => { /* Do custom operations here and return transformed string */ }, 
-    
+    encode?: (param: string): string => { /* Do custom operations here and return transformed string */ },
+
     // Custom serializer function for the entire parameter. Allows user to mimic pre 1.x behaviour.
-    serialize?: (params: Record<string, any>, options?: ParamsSerializerOptions ), 
-    
-    // Configuration for formatting array indexes in the params. 
-    indexes: false // Three available options: (1) indexes: null (leads to no brackets), (2) (default) indexes: false (leads to empty brackets), (3) indexes: true (leads to brackets with indexes).    
+    serialize?: (params: Record<string, any>, options?: ParamsSerializerOptions ),
+
+    // Configuration for formatting array indexes in the params.
+    indexes: false // Three available options: (1) indexes: null (leads to no brackets), (2) (default) indexes: false (leads to empty brackets), (3) indexes: true (leads to brackets with indexes).
   },
 
   // `data` is the data to be sent as the request body
@@ -494,7 +494,7 @@ These are the available config options for making requests. Only the `url` is re
 
   // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
   xsrfHeaderName: 'X-XSRF-TOKEN', // default
-    
+
   // `undefined` (default) - set XSRF header only for the same origin requests
   withXSRFToken: boolean | undefined | ((config: InternalAxiosRequestConfig) => boolean | undefined),
 
@@ -544,7 +544,7 @@ These are the available config options for making requests. Only the `url` is re
   // Only either `socketPath` or `proxy` can be specified.
   // If both are specified, `socketPath` is used.
   socketPath: null, // default
-  
+
   // `transport` determines the transport method that will be used to make the request.
   // If defined, it will be used. Otherwise, if `maxRedirects` is 0,
   // the default `http` or `https` library will be used, depending on the protocol specified in `protocol`.
@@ -837,10 +837,10 @@ The general structure of axios errors is as follows:
 | -------- | ----------  |
 | message  | A quick summary of the error message and the status it failed with. |
 | name     | This defines where the error originated from. For axios, it will always be an 'AxiosError'. |
-| stack    | Provides the stack trace of the error. | 
+| stack    | Provides the stack trace of the error. |
 | config   | An axios config object with specific instance configurations defined by the user from when the request was made |
 | code     | Represents an axios identified error. The table below lists out specific definitions for internal axios error.  |
-| status   | HTTP response status code. See [here](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for common HTTP response status code meanings. 
+| status   | HTTP response status code. See [here](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for common HTTP response status code meanings.
 
 Below is a list of potential axios identified error:
 
@@ -1285,7 +1285,7 @@ Sending `Blobs`/`Files` as JSON (`base64`) is not currently supported.
 Axios supports both browser and node environments to capture request upload/download progress.
 The frequency of progress events is forced to be limited to `3` times per second.
 
-```js    
+```js
 await axios.post(url, data, {
   onUploadProgress: function (axiosProgressEvent) {
     /*{
@@ -1304,13 +1304,13 @@ await axios.post(url, data, {
       loaded: number;
       total?: number;
       progress?: number;
-      bytes: number; 
+      bytes: number;
       estimated?: number;
       rate?: number; // download speed in bytes
       download: true; // download sign
     }*/
   }
-});  
+});
 ```
 
 You can also track stream upload/download progress in node.js:
@@ -1320,7 +1320,7 @@ const {data} = await axios.post(SERVER_URL, readableStream, {
    onUploadProgress: ({progress}) => {
      console.log((progress * 100).toFixed(2));
    },
-  
+
    headers: {
     'Content-Length': contentLength
    },
@@ -1346,7 +1346,7 @@ const {data} = await axios.post(LOCAL_SERVER_URL, myBuffer, {
   onUploadProgress: ({progress, rate}) => {
     console.log(`Upload [${(progress*100).toFixed(2)}%]: ${(rate / 1024).toFixed(2)}KB/s`)
   },
-   
+
   maxRate: [100 * 1024], // 100KB/s limit
 });
 ```
@@ -1384,13 +1384,13 @@ The headers object is always initialized inside interceptors and transformers:
         "My-set-header1": "my-set-value1",
         "My-set-header2": "my-set-value2"
       });
-      
+
       request.headers.set('User-Agent', false); // disable subsequent setting the header by Axios
 
       request.headers.setContentType('text/plain');
-    
+
       request.headers['My-set-header2'] = 'newValue' // direct access is deprecated
-    
+
       return request;
     }
   );
@@ -1416,7 +1416,7 @@ for(const [header, value] of headers) {
 
 ### new AxiosHeaders(headers?)
 
-Constructs a new `AxiosHeaders` instance. 
+Constructs a new `AxiosHeaders` instance.
 
 ```
 constructor(headers?: RawAxiosHeaders | AxiosHeaders | string);
@@ -1471,7 +1471,7 @@ const headers = new AxiosHeaders({
   'Content-Type': 'multipart/form-data; boundary=Asrf456BGe4h'
 });
 
-console.log(headers.get('Content-Type')); 
+console.log(headers.get('Content-Type'));
 // multipart/form-data; boundary=Asrf456BGe4h
 
 console.log(headers.get('Content-Type', true)); // parse key-value pairs from a string separated with \s,;= delimiters:
@@ -1515,7 +1515,7 @@ Returns `true` if at least one header has been removed.
 clear(matcher?: AxiosHeaderMatcher): boolean;
 ```
 
-Removes all headers. 
+Removes all headers.
 Unlike the `delete` method matcher, this optional matcher will be used to match against the header name rather than the value.
 
 ```ts
@@ -1570,7 +1570,7 @@ Returns a new `AxiosHeaders` instance.
 toJSON(asStrings?: boolean): RawAxiosHeaders;
 ````
 
-Resolve all internal headers values into a new null prototype object. 
+Resolve all internal headers values into a new null prototype object.
 Set `asStrings` to true to resolve arrays as a string containing all elements, separated by commas.
 
 ### AxiosHeaders.from(thing?)
@@ -1626,7 +1626,7 @@ const fetchAxios = axios.create({
 const {data} = fetchAxios.get(url);
 ```
 
-The adapter supports the same functionality as `xhr` adapter, **including upload and download progress capturing**. 
+The adapter supports the same functionality as `xhr` adapter, **including upload and download progress capturing**.
 Also, it supports additional response types such as `stream` and `formdata` (if supported by the environment).
 
 ### 🔥 Custom fetch
@@ -1680,7 +1680,7 @@ const instance = axios.create({
  const {data} = await instance.get("https://google.com");
 ```
 
-#### 🔥 Using with SvelteKit 
+#### 🔥 Using with SvelteKit
 
 [SvelteKit](https://svelte.dev/docs/kit/web-standards#Fetch-APIs) framework has a custom implementation of the fetch function for server rendering (so called `load` functions), and also uses relative paths,
 which makes it incompatible with the standard URL API. So, Axios must be configured to use the custom fetch API:
@@ -1753,4 +1753,4 @@ axios is heavily inspired by the [$http service](https://docs.angularjs.org/api/
 
 ## License
 
-[MIT](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
