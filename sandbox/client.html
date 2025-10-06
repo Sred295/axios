@@ -1,220 +1,412 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>AXIOS | Sandbox</title>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"/>
-  <style type="text/css">
-    pre {
-      min-height: 39px;
-      overflow: auto;
-    }
-    .header{
-      display: flex;
-      flex-direction: row;
-    }
-    .box{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-gap: 25px;
-    }
-    .well {
-      max-width: 400px;
-    }
-    @media screen and (max-width: 1000px) {
+  <head>
+    <title>AXIOS | Sandbox</title>
+
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    />
+
+    <!-- Font Awesome for Theme Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <style type="text/css">
+      /* --- Theme Variables --- */
+      :root {
+        --color-text: #212529;
+        --color-background: #ffffff;
+        --color-primary-blue: #007bff;
+        --color-footer-bg: #f8f9fa;
+        --color-input-bg: #ffffff;
+        --color-border: #ced4da;
+        --color-pre-bg: #f5f5f5;
+        --color-well-bg: #ffffff;
+      }
+
+      /* Dark Theme Overrides */
+      .dark-theme {
+        --color-text: #e9ecef;
+        --color-background: #1e1e1e;
+        --color-primary-blue: #79a6ff;
+        --color-footer-bg: #2c2c2c;
+        --color-input-bg: #333333;
+        --color-border: #444444;
+        --color-pre-bg: #2a2a2a;
+        --color-well-bg: #242424;
+      }
+
+      /* --- General Styles --- */
+      body {
+        background-color: var(--color-background);
+        color: var(--color-text);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      pre {
+        min-height: 39px;
+        overflow: auto;
+        background-color: var(--color-pre-bg);
+        color: var(--color-text);
+        border: 1px solid var(--color-border);
+        padding: 10px;
+        border-radius: 4px;
+      }
+
+      .well {
+        max-width: 400px;
+        padding: 15px;
+        background-color: var(--color-well-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+      }
+
+      .form-control,
+      .btn-primary {
+        background-color: var(--color-input-bg) !important;
+        color: var(--color-text) !important;
+        border-color: var(--color-border) !important;
+      }
+
+      .btn-primary {
+        background-color: var(--color-primary-blue) !important;
+        border-color: var(--color-primary-blue) !important;
+        color: white !important;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header-title {
+        display: flex;
+        align-items: center;
+      }
+
       .box {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 25px;
       }
-    }
-  </style>
-</head>
-<body class="container">
-<div class="header">
-  <img src="https://axios-http.com/assets/logo.svg" alt="axios" width="100" height="60">
-  <h1> &nbsp;| Sandbox</h1>
-</div>
 
-<div class="box">
-  <div class="well">
-    <h3>Input</h3>
-    <form role="form" onsubmit="return false;">
-      <div class="form-group">
-        <label for="url">URL</label>
-        <input id="url" type="url" class="form-control" placeholder="/api"/>
-      </div>
-      <div class="form-group">
-        <label for="method">Method</label>
-        <select id="method" class="form-control">
-          <option value="GET">GET</option>
-          <option value="POST">POST</option>
-          <option value="PUT">PUT</option>
-          <option value="DELETE">DELETE</option>
-          <option value="HEAD">HEAD</option>
-          <option value="PATCH">PATCH</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="params">Params</label>
-        <textarea id="params" class="form-control" placeholder='{"foo": "bar", "baz": 123.45}'></textarea>
-      </div>
-      <div class="form-group" style="display: none;">
-        <label for="data">Data</label>
-        <textarea id="data" class="form-control" placeholder='{"foo": "bar", "baz": 123.45}'></textarea>
-      </div>
-      <div class="form-group">
-        <label for="headers">Headers</label>
-        <textarea id="headers" class="form-control" placeholder='{"X-Requested-With": "XMLHttpRequest"}'></textarea>
-      </div>
-      <button id="submit" type="submit" class="btn btn-primary">Send Request</button>
-    </form>
-  </div>
+      #theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5em;
+        padding: 5px;
+        margin-right: 10px;
+        color: var(--color-text);
+        transition: transform 0.2s, color 0.3s;
+      }
 
-  <div class="response">
-    <div class="well">
-      <h3>Request</h3>
-      <pre id="request">No Data</pre>
+      #theme-toggle:hover {
+        transform: scale(1.2);
+        color: var(--color-primary-blue);
+      }
+
+      .footer {
+        padding: 20px 0;
+        margin-top: 50px;
+        background-color: var(--color-footer-bg);
+        border-top: 1px solid var(--color-border);
+        width: 100%;
+        text-align: center;
+        position: relative;
+      }
+
+      .footer a {
+        color: var(--color-text);
+        text-decoration: none;
+        margin: 0 10px;
+        opacity: 0.7;
+      }
+
+      .footer a:hover {
+        opacity: 1;
+      }
+
+      .footer-links {
+        margin-bottom: 10px;
+      }
+
+      @media screen and (max-width: 1000px) {
+        .box {
+          grid-template-columns: 1fr;
+        }
+        .well {
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="container">
+    <div class="header">
+      <div class="header-title">
+        <img
+          src="https://axios-http.com/assets/logo.svg"
+          alt="axios"
+          width="100"
+          height="60"
+        />
+        <h1>&nbsp;| Sandbox</h1>
+      </div>
+
+      <!-- ✅ Updated Theme Toggle Button -->
+      <button id="theme-toggle" title="Toggle Light/Dark Mode">
+        <i class="fa-solid fa-sun" id="theme-icon"></i>
+      </button>
     </div>
 
-    <div class="well">
-      <h3>Response</h3>
-      <pre id="response">No Data</pre>
+    <div class="box">
+      <div class="well">
+        <h3>Input</h3>
+        <form role="form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="url">URL</label>
+            <input
+              id="url"
+              type="url"
+              class="form-control"
+              placeholder="/api"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="method">Method</label>
+            <select id="method" class="form-control">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+              <option value="HEAD">HEAD</option>
+              <option value="PATCH">PATCH</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="params">Params</label>
+            <textarea
+              id="params"
+              class="form-control"
+              placeholder='{"foo": "bar", "baz": 123.45}'
+            ></textarea>
+          </div>
+
+          <div class="form-group" style="display: none">
+            <label for="data">Data</label>
+            <textarea
+              id="data"
+              class="form-control"
+              placeholder='{"foo": "bar", "baz": 123.45}'
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="headers">Headers</label>
+            <textarea
+              id="headers"
+              class="form-control"
+              placeholder='{"X-Requested-With": "XMLHttpRequest"}'
+            ></textarea>
+          </div>
+
+          <button id="submit" type="submit" class="btn btn-primary">
+            Send Request
+          </button>
+        </form>
+      </div>
+
+      <div class="response">
+        <div class="well">
+          <h3>Request</h3>
+          <pre id="request">No Data</pre>
+        </div>
+
+        <div class="well">
+          <h3>Response</h3>
+          <pre id="response">No Data</pre>
+        </div>
+
+        <div class="well">
+          <h3>Error</h3>
+          <pre id="error">None</pre>
+        </div>
+      </div>
     </div>
 
-    <div class="well">
-      <h3>Error</h3>
-      <pre id="error">None</pre>
-    </div>
-  </div>
-</div>
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="https://axios-http.com" target="_blank">Axios Website</a> |
+        <a href="https://axios-http.com/docs/intro" target="_blank"
+          >Documentation</a
+        >
+        |
+        <a href="https://github.com/axios/axios" target="_blank">GitHub</a>
+      </div>
+      <p class="mb-0">
+        &copy; 2025 Axios Project. All rights reserved. Licensed under MIT.
+      </p>
+    </footer>
 
-<script src="/axios.js"></script>
-<script>
-  (function () {
-    var url = document.getElementById('url');
-    var method = document.getElementById('method');
-    var params = document.getElementById('params');
-    var data = document.getElementById('data');
-    var headers = document.getElementById('headers');
-    var submit = document.getElementById('submit');
-    var request = document.getElementById('request');
-    var response = document.getElementById('response');
-    var error = document.getElementById('error');
+    <script src="../dist/axios.js"></script>
+    <script>
+      (function () {
+        var url = document.getElementById("url");
+        var method = document.getElementById("method");
+        var params = document.getElementById("params");
+        var data = document.getElementById("data");
+        var headers = document.getElementById("headers");
+        var submit = document.getElementById("submit");
+        var request = document.getElementById("request");
+        var response = document.getElementById("response");
+        var error = document.getElementById("error");
 
-    function acceptsData(method) {
-      return ['PATCH', 'POST', 'PUT'].indexOf(method) > -1;
-    }
+        // ✅ Updated THEME TOGGLE LOGIC
+        const toggleButton = document.getElementById("theme-toggle");
+        const themeIcon = document.getElementById("theme-icon");
+        const body = document.body;
+        const themeKey = "axios-sandbox-theme";
 
-    function getUrl() {
-      return url.value.length === 0 ? '/api' : url.value;
-    }
-
-    function getParams() {
-      try {
-        return params.value.length === 0 ? null : JSON.parse(params.value);
-      } catch (e) {
-        error.textContent = "Invalid JSON in Params";
-        return null;
-      }
-    }
-
-    function getData() {
-      try {
-        return data.value.length === 0 ? null : JSON.parse(data.value);
-      } catch (e) {
-        error.textContent = "Invalid JSON in Data";
-        return null;
-      }
-    }
-
-    function getHeaders() {
-      try {
-        return headers.value.length === 0 ? null : JSON.parse(headers.value);
-      } catch (e) {
-        error.textContent = "Invalid JSON in Headers";
-        return null;
-      }
-    }
-
-    function syncWithLocalStorage() {
-      url.value = localStorage.getItem('url') || '/api';
-      method.value = localStorage.getItem('method') || 'GET';
-      params.value = localStorage.getItem('params') || '';
-      data.value = localStorage.getItem('data') || '';
-      headers.value = localStorage.getItem('headers') || '';
-    }
-
-    function syncParamsAndData() {
-      switch (method.value) {
-        case 'PATCH':
-        case 'POST':
-        case 'PUT':
-          params.parentNode.style.display = 'none';
-          data.parentNode.style.display = '';
-          break;
-        default:
-          params.parentNode.style.display = '';
-          data.parentNode.style.display = 'none';
-          break;
-      }
-    }
-
-    submit.onclick = function (event) {
-      event.preventDefault();
-
-      if (url.value === '') {
-        error.textContent = 'Please enter a valid URL';
-        return;
-      }
-
-      var options = {
-        url: getUrl(),
-        params: !acceptsData(method.value) ? getParams() : undefined,
-        data: acceptsData(method.value) ? getData() : undefined,
-        method: method.value,
-        headers: getHeaders()
-      };
-
-      request.textContent = JSON.stringify(options, null, 2);
-
-      axios(options)
-        .then(function (res) {
-          response.innerHTML = JSON.stringify(res.data, null, 2);
-          error.textContent = "None";
-        })
-        .catch(function (err) {
-          if (err.response) {
-            error.textContent = JSON.stringify(err.response.data, null, 2);
-            response.innerHTML = "Error in Response";
+        function applyTheme(theme) {
+          if (theme === "dark-theme") {
+            body.classList.add("dark-theme");
+            themeIcon.classList.replace("fa-sun", "fa-moon");
           } else {
-            error.textContent = err.message;
-            response.innerHTML = "No Response Data";
+            body.classList.remove("dark-theme");
+            themeIcon.classList.replace("fa-moon", "fa-sun");
           }
+        }
+
+        const savedTheme = localStorage.getItem(themeKey);
+        if (savedTheme) {
+          applyTheme(savedTheme);
+        } else if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          applyTheme("dark-theme");
+        } else {
+          applyTheme("light-theme");
+        }
+
+        toggleButton.addEventListener("click", () => {
+          const newTheme = body.classList.contains("dark-theme")
+            ? "light-theme"
+            : "dark-theme";
+          applyTheme(newTheme);
+          localStorage.setItem(themeKey, newTheme);
         });
-    };
 
-    url.onchange = function () {
-      localStorage.setItem('url', url.value);
-    };
+        // --- AXIOS LOGIC ---
+        function acceptsData(method) {
+          return ["PATCH", "POST", "PUT"].indexOf(method) > -1;
+        }
 
-    method.onchange = function () {
-      localStorage.setItem('method', method.value);
-      syncParamsAndData();
-    };
+        function getUrl() {
+          return url.value.length === 0 ? "/api" : url.value;
+        }
 
-    params.onchange = function () {
-      localStorage.setItem('params', params.value);
-    };
+        function parseJSON(input, errorMessage) {
+          try {
+            return input.value.length === 0 ? null : JSON.parse(input.value);
+          } catch (e) {
+            error.textContent = errorMessage;
+            return null;
+          }
+        }
 
-    data.onchange = function () {
-      localStorage.setItem('data', data.value);
-    };
+        function getParams() {
+          return parseJSON(params, "Invalid JSON in Params");
+        }
+        function getData() {
+          return parseJSON(data, "Invalid JSON in Data");
+        }
+        function getHeaders() {
+          return parseJSON(headers, "Invalid JSON in Headers");
+        }
 
-    headers.onchange = function () {
-      localStorage.setItem('headers', headers.value);
-    };
+        function syncWithLocalStorage() {
+          url.value = localStorage.getItem("url") || "/api";
+          method.value = localStorage.getItem("method") || "GET";
+          params.value = localStorage.getItem("params") || "";
+          data.value = localStorage.getItem("data") || "";
+          headers.value = localStorage.getItem("headers") || "";
+        }
 
-    syncWithLocalStorage();
-    syncParamsAndData();
-  })();
-</script>
-</body>
+        function syncParamsAndData() {
+          if (acceptsData(method.value)) {
+            params.parentNode.style.display = "none";
+            data.parentNode.style.display = "";
+          } else {
+            params.parentNode.style.display = "";
+            data.parentNode.style.display = "none";
+          }
+        }
+
+        submit.onclick = function (event) {
+          event.preventDefault();
+
+          if (url.value === "") {
+            error.textContent = "Please enter a valid URL";
+            return;
+          }
+
+          var options = {
+            url: getUrl(),
+            params: !acceptsData(method.value) ? getParams() : undefined,
+            data: acceptsData(method.value) ? getData() : undefined,
+            method: method.value,
+            headers: getHeaders(),
+          };
+
+          request.textContent = JSON.stringify(options, null, 2);
+
+          axios(options)
+            .then(function (res) {
+              response.textContent = JSON.stringify(res.data, null, 2);
+              error.textContent = "None";
+            })
+            .catch(function (err) {
+              if (err.response) {
+                error.textContent = JSON.stringify(err.response.data, null, 2);
+                response.textContent = "Error in Response";
+              } else {
+                error.textContent = err.message;
+                response.textContent = "No Response Data";
+              }
+            });
+        };
+
+        url.onchange = function () {
+          localStorage.setItem("url", url.value);
+        };
+        method.onchange = function () {
+          localStorage.setItem("method", method.value);
+          syncParamsAndData();
+        };
+        params.onchange = function () {
+          localStorage.setItem("params", params.value);
+        };
+        data.onchange = function () {
+          localStorage.setItem("data", data.value);
+        };
+        headers.onchange = function () {
+          localStorage.setItem("headers", headers.value);
+        };
+
+        syncWithLocalStorage();
+        syncParamsAndData();
+      })();
+    </script>
+  </body>
 </html>
