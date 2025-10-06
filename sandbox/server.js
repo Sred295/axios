@@ -28,9 +28,10 @@ server = http.createServer(function (req, res) {
 
   if (pathname === '/index.html') {
     pipeFileToResponse(res, './client.html', 'text/html');
-  } else if (pathname === '/axios.js') {
+  } else if (pathname === '/axios.js' || pathname === '/dist/axios.js') {
+    // Support both legacy `/axios.js` and direct `/dist/axios.js` requests
     pipeFileToResponse(res, '../dist/axios.js', 'text/javascript');
-  } else if (pathname === '/axios.js.map') {
+  } else if (pathname === '/axios.js.map' || pathname === '/dist/axios.js.map') {
     pipeFileToResponse(res, '../dist/axios.js.map', 'text/javascript');
   } else if (pathname === '/api') {
     let status;
