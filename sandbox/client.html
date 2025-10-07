@@ -47,6 +47,8 @@
       background-color: var(--well-bg);
       color: var(--text-color);
       border: 1px solid var(--border-color);
+      padding: 15px;
+      
     }
     
     .form-control {
@@ -55,6 +57,7 @@
     
     .form-control::placeholder {
         color: #6c757d;
+        border-radius: 10px;
     }
     
     /* --- UI Improvement: Added spacing to form groups --- */
@@ -68,6 +71,7 @@
     }
     .header{
       display: flex;
+      padding-top:2rem;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
@@ -75,13 +79,14 @@
     }
     .box{
       display: grid;
+      
       grid-template-columns: 1fr 1fr;
       grid-gap: 40px; /* Increased gap between input and response columns */
     }
 
     #theme-toggle {
         padding: 5px 10px;
-        border-radius: 5px;
+        border-radius: 10px;
         cursor: pointer;
         border: 1px solid var(--border-color);
         background-color: var(--well-bg);
@@ -172,11 +177,11 @@
     <h3>Input</h3>
     <form role="form" onsubmit="return false;">
       <div class="form-group">
-        <label for="url">URL</label>
+        <label for="url" style='padding: 10px 0 10px;'>URL</label>
         <input id="url" type="url" class="form-control" placeholder="/api"/>
       </div>
       <div class="form-group">
-        <label for="method">Method</label>
+        <label for="method"  style='padding: 10px 0 10px;'>Method</label>
         <select id="method" class="form-control">
           <option value="GET">GET</option>
           <option value="POST">POST</option>
@@ -187,7 +192,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="params">Params</label>
+        <label for="params"  style='padding: 5px 0 10px;'>Params</label>
         <textarea id="params" class="form-control" placeholder='{"foo": "bar", "baz": 123.45}'></textarea>
       </div>
       <div class="form-group" style="display: none;">
@@ -195,7 +200,7 @@
         <textarea id="data" class="form-control" placeholder='{"foo": "bar", "baz": 123.45}'></textarea>
       </div>
       <div class="form-group">
-        <label for="headers">Headers</label>
+        <label for="headers"  style='padding: 5px 0 10px;'>Headers</label>
         <textarea id="headers" class="form-control" placeholder='{"X-Requested-With": "XMLHttpRequest"}'></textarea>
       </div>
       <button id="submit" type="submit" class="btn btn-primary">Send Request</button>
