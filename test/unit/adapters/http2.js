@@ -96,7 +96,6 @@ describe('supports http2 with nodejs', () => {
 
   it('should support authorization headers', async () => {
     server = await startHTTP2Server((req, res) => {
-      res.setHeader('Content-Type', 'application/json');
       res.end(req.headers.authorization);
     });
 
@@ -109,7 +108,6 @@ describe('supports http2 with nodejs', () => {
 
   it('should combine baseURL and url', async () => {
     server = await startHTTP2Server((req, res) => {
-      res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(req.headers));
     });
 
@@ -137,7 +135,7 @@ describe('supports http2 with nodejs', () => {
   it('should get response headers', async () => {
     server = await startHTTP2Server((req, res) => {
       res.setHeader('foo', 'bar');
-      res.end(sanitizeUrl(req.url));
+      res.end();
     });
 
     const { headers } = await http2Axios.get('/', {
@@ -145,5 +143,24 @@ describe('supports http2 with nodejs', () => {
     });
 
     assert.strictEqual(headers.get('foo'), 'bar');
+  });
+
+  it('should throw when failed to parse data', async () => {
+    server = await startHTTP2Server((req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.end("{'wrong': 'json';}");
+    });
+
+    let error;
+    try {
+      await http2Axios.get('/12');
+    } catch (err) {
+      error = err;
+    }
+
+    assert(error);
+    assert.strictEqual(error.code, 'ERR_BAD_RESPONSE');
+    assert.strictEqual(error.response.status, 200);
+    assert.strictEqual(error.response.headers.get('content-type'), 'application/json');
   });
 });
