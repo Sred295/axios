@@ -1,14 +1,14 @@
-import assert from 'assert';
-import composeSignals from '../../../lib/helpers/composeSignals.js';
+import assert from "assert";
+import composeSignals from "../../../lib/helpers/composeSignals.js";
 
-describe('helpers::composeSignals', () => {
+describe("helpers::composeSignals", () => {
   before(function () {
-    if (typeof AbortController !== 'function') {
+    if (typeof AbortController !== "function") {
       this.skip();
     }
   });
 
-  it('should abort when any of the signals abort', () => {
+  it("should abort when any of the signals abort", () => {
     let called;
 
     const controllerA = new AbortController();
@@ -16,26 +16,26 @@ describe('helpers::composeSignals', () => {
 
     const signal = composeSignals([controllerA.signal, controllerB.signal]);
 
-    signal.addEventListener('abort', () => {
+    signal.addEventListener("abort", () => {
       called = true;
     });
 
-    controllerA.abort(new Error('test'));
+    controllerA.abort(new Error("test"));
 
     assert.ok(called);
   });
 
-  it('should abort on timeout', async () => {
+  it("should abort on timeout", async () => {
     const signal = composeSignals([], 100);
 
-    await new Promise(resolve => {
-      signal.addEventListener('abort', resolve);
+    await new Promise((resolve) => {
+      signal.addEventListener("abort", resolve);
     });
 
-    assert.match(String(signal.reason), /timeout 100 of ms exceeded/);
+    assert.match(String(signal.reason), /timeout of 100ms exceeded/);
   });
 
-  it('should return undefined if signals and timeout are not provided', async () => {
+  it("should return undefined if signals and timeout are not provided", async () => {
     const signal = composeSignals([]);
 
     assert.strictEqual(signal, undefined);
