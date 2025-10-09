@@ -1,0 +1,20 @@
+// need to change in th function
+function isEmptyObject(val) {
+  if (Buffer.isBuffer(val)) return false; // skip Buffers
+  return val && Object.keys(val).length === 0 && Object.getPrototypeOf(val) === Object.prototype;
+}
+
+  import axios from 'axios'
+
+async function main() {
+  const buffer = Buffer.alloc(1024 * 1024 * 200) // 200 MB buffer
+  const arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+  
+  await axios({
+    method: 'POST',
+    url: 'http://localhost:8080',
+    data: arrayBuffer
+  })
+}
+
+main()
