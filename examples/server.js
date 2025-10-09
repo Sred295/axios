@@ -7,6 +7,7 @@ const argv = minimist(process.argv.slice(2));
 let server;
 let dirs;
 
+// path module is import for location purpose
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
