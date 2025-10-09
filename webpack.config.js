@@ -24,3 +24,4 @@ function generateConfig(name) {
 });
 
 module.exports = config;
+// simple logic was used
