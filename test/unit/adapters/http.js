@@ -55,11 +55,11 @@ const deflateRaw = util.promisify(zlib.deflateRaw);
 const brotliCompress = util.promisify(zlib.brotliCompress);
 
 function toleranceRange(positive, negative) {
-  const p = (1 + 1 / positive);
-  const n = (1 / negative);
+  const p = 1 + positive / 100;
+  const n = 1 - negative / 100;
 
   return (actualValue, value) => {
-    return actualValue - value > 0 ? actualValue < value * p : actualValue > value * n;
+    return actualValue > value ? actualValue <= value * p : actualValue >= value * n;
   }
 }
 
@@ -67,9 +67,6 @@ const nodeVersion = process.versions.node.split('.').map(v => parseInt(v, 10));
 const nodeMajorVersion = nodeVersion[0];
 
 var noop = ()=> {};
-
-const passed = (ts) => Date.now() - ts;
-
 
 describe('supports http with nodejs', function () {
   afterEach(async function () {

@@ -87,6 +87,7 @@
     - [🔥 Custom fetch](#-custom-fetch)
       - [🔥 Using with Tauri](#-using-with-tauri)
       - [🔥 Using with SvelteKit](#-using-with-sveltekit-)
+  - [🔥 HTTP2](#-http2)
   - [Semver](#semver)
   - [Promises](#promises)
   - [TypeScript](#typescript)
@@ -1700,6 +1701,34 @@ export async function load({ fetch }) {
 
   return { post };
 }
+```
+
+## 🔥 HTTP2
+
+In version `1.13.0`, experimental `HTTP2` support was added to the `http` adapter. 
+The `httpVersion` option is now available to select the protocol version used.
+Additional native options for the internal `session.request()` call can be passed via the `httpOptions` config.
+This config also includes the custom `sessionTimeout` parameter, which defaults to `1000ms`.
+
+```js
+const form = new FormData();
+
+    form.append('foo', '123');
+
+    const {data, headers, status} = await axios.post('https://httpbin.org/post', form, {
+      httpVersion: 2,
+      http2Options: {
+        // rejectUnauthorized: false,
+        // sessionTimeout: 1000
+      }
+      onUploadProgress(e) {
+        console.log('upload progress', e);
+      },
+      onDownloadProgress(e) {
+        console.log('download progress', e);
+      },
+      responseType: 'arraybuffer'
+    });
 ```
 
 ## Semver
