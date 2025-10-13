@@ -690,6 +690,27 @@ describe('supports http with nodejs', function () {
 
             await axios.get(LOCAL_SERVER_URL);
           });
+
+          it("should throw an error if http server aborts and maxRedirects is 0", async () => {
+            server = await startHTTPServer(async function (req, res) {
+              res.setHeader('Content-Encoding', type);
+              res.setHeader('Transfer-Encoding', 'chunked');
+              res.removeHeader('Content-Length');
+              res.write(await zipped);
+              setTimeout(() => {
+                res.socket.destroy();
+              }, 10);
+            });
+
+            try {
+              await axios.get(LOCAL_SERVER_URL, {
+                maxRedirects: 0,
+              });
+              assert.fail("expected aborted error");
+            } catch (err) {
+              assert.equal(err.message, `aborted`);
+            }
+          });
         });
       }
 
