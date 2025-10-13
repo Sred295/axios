@@ -80,7 +80,12 @@
     "http",
     "ajax",
     "promise",
-    "node"
+    "node",
+    "browser",
+    "fetch",
+    "rest",
+    "api",
+    "client"
   ],
   "author": "Matt Zabriskie",
   "license": "MIT",
