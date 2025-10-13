@@ -2409,7 +2409,7 @@ describe('supports http with nodejs', function () {
       assert.ok(isAborted);
     });
 
-    it('should support request cancellation', async () => {
+    it('should support request cancellation', async function (){
       if (typeof AbortSignal !== 'function') {
         this.skip();
       }
@@ -2447,6 +2447,7 @@ describe('supports http with nodejs', function () {
 
     it('should support stream response cancellation', async () => {
       let isAborted= false;
+      var source = axios.CancelToken.source();
 
       let aborted;
       const promise = new Promise(resolve => aborted = resolve);
@@ -2465,9 +2466,11 @@ describe('supports http with nodejs', function () {
       });
 
       const {data} = await http2Axios.get(LOCAL_SERVER_URL, {
-        signal: AbortSignal.timeout(2000),
+        cancelToken: source.token,
         responseType: 'stream'
       });
+
+      setTimeout(() => source.cancel());
 
       await assert.rejects(
         () => pipelineAsync([data, devNull()]),
@@ -2540,15 +2543,6 @@ describe('supports http with nodejs', function () {
           ['OK', 'OK']
         );
       });
-
-
-
-
-
-
-
-
-
     });
   });
 });

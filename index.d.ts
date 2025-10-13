@@ -370,7 +370,9 @@ export interface AxiosRequestConfig<D = any> {
   parseReviver?: (this: any, key: string, value: any) => any;
   fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
   httpVersion?: 1 | 2
-  http2Options?: Record<string, any>
+  http2Options?: Record<string, any> & {
+    sessionTimeout?: number;
+  }
 }
 
 // Alias

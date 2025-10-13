@@ -437,7 +437,9 @@ declare namespace axios {
     withXSRFToken?: boolean | ((config: InternalAxiosRequestConfig) => boolean | undefined);
     fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
     httpVersion?: 1 | 2
-    http2Options?: Record<string, any>
+    http2Options?: Record<string, any> & {
+      sessionTimeout?: number;
+    }
   }
 
   // Alias
