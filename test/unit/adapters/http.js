@@ -32,7 +32,7 @@ import {
   generateReadable
 } from '../../helpers/server.js';
 
-const LOCAL_SERVER_URL2 = 'https://127.0.0.1:5555';
+const LOCAL_SERVER_URL2 = 'https://localhost:5555';
 const SERVER_PORT = 4444;
 const SERVER_PORT2 = 5555;
 
@@ -2285,6 +2285,24 @@ describe('supports http with nodejs', function () {
 
     this.timeout(10000);
 
+    it('should merge request http2Options with its instance config', async () => {
+      const {data} = await http2Axios.get('/', {
+        http2Options: {
+          foo : 'test'
+        },
+        adapter: async (config) => {
+          return {
+            data: config.http2Options
+          }
+        }
+      });
+
+      assert.deepStrictEqual(data, {
+        rejectUnauthorized: false,
+        foo : 'test'
+      });
+    });
+
     it('should support http2 transport', async () => {
       server = await startHTTPServer((req, res) => {
         res.end('OK');
@@ -2529,6 +2547,108 @@ describe('supports http with nodejs', function () {
             responseType: 'stream'
           })
         ]);
+
+        assert.notStrictEqual(response1.data.session, response2.data.session);
+
+        assert.deepStrictEqual(
+          await Promise.all([
+            getStream(response1.data),
+            getStream(response2.data)
+          ]),
+          ['OK', 'OK']
+        );
+      });
+
+      it("should use different sessions for requests with different http2Options set", async() => {
+        server = await startHTTPServer((req, res) => {
+          setTimeout(() => res.end('OK'), 1000);
+        }, {
+          useHTTP2: true
+        });
+
+        const [response1, response2] = await Promise.all([
+          http2Axios.get(LOCAL_SERVER_URL, {
+            responseType: 'stream',
+            http2Options: {
+
+            }
+          }),
+          http2Axios.get(LOCAL_SERVER_URL, {
+            responseType: 'stream',
+            http2Options: {
+              foo: 'test'
+            }
+          })
+        ]);
+
+        assert.notStrictEqual(response1.data.session, response2.data.session);
+
+        assert.deepStrictEqual(
+          await Promise.all([
+            getStream(response1.data),
+            getStream(response2.data)
+          ]),
+          ['OK', 'OK']
+        );
+      });
+
+      it("should use the same session for request with the same resolved http2Options set", async() => {
+        server = await startHTTPServer((req, res) => {
+          setTimeout(() => res.end('OK'), 1000);
+        }, {
+          useHTTP2: true
+        });
+
+        const responses = await Promise.all([
+          http2Axios.get(LOCAL_SERVER_URL, {
+            responseType: 'stream'
+          }),
+          http2Axios.get(LOCAL_SERVER_URL, {
+            responseType: 'stream',
+            http2Options: undefined
+          }),
+          http2Axios.get(LOCAL_SERVER_URL, {
+            responseType: 'stream',
+            http2Options: {
+
+            }
+          })
+        ]);
+
+
+
+        assert.strictEqual(responses[1].data.session, responses[0].data.session);
+        assert.strictEqual(responses[2].data.session, responses[0].data.session);
+
+
+        assert.deepStrictEqual(
+          await Promise.all(responses.map(({data}) => getStream(data))),
+          ['OK', 'OK', 'OK']
+        );
+      });
+
+      it("should use different sessions after previous session timeout", async() => {
+        server = await startHTTPServer((req, res) => {
+          setTimeout(() => res.end('OK'), 100);
+        }, {
+          useHTTP2: true
+        });
+
+        const response1 = await http2Axios.get(LOCAL_SERVER_URL, {
+          responseType: 'stream',
+          http2Options: {
+            sessionTimeout: 1000
+          }
+        });
+
+        await setTimeoutAsync(5000);
+
+        const response2 = await http2Axios.get(LOCAL_SERVER_URL, {
+          responseType: 'stream',
+          http2Options: {
+            sessionTimeout: 1000
+          }
+        });
 
         assert.notStrictEqual(response1.data.session, response2.data.session);
 
