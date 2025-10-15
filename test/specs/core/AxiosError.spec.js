@@ -54,3 +54,14 @@ describe('core::AxiosError', function() {
       expect(err.status).toBe(400);
   });
 });
+describe('AxiosError.from stack preservation', () => {
+  it('should include original stack when wrapping an error', () => {
+    const { default: AxiosError } = await import('../../../lib/core/AxiosError.js');
+    const baseError = new Error('Root cause test');
+    const wrapped = AxiosError.from(baseError, 'ERR_NETWORK');
+
+    expect(typeof wrapped.stack).toBe('string');
+    expect(wrapped.stack).toContain('Caused by: Error: Root cause test');
+    expect(wrapped.message).toBe('Root cause test');
+  });
+});
