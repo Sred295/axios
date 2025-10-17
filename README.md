@@ -1707,7 +1707,7 @@ export async function load({ fetch }) {
 
 In version `1.13.0`, experimental `HTTP2` support was added to the `http` adapter. 
 The `httpVersion` option is now available to select the protocol version used.
-Additional native options for the internal `session.request()` call can be passed via the `httpOptions` config.
+Additional native options for the internal `session.request()` call can be passed via the `http2Options` config.
 This config also includes the custom `sessionTimeout` parameter, which defaults to `1000ms`.
 
 ```js
