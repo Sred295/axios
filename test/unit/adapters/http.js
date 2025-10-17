@@ -2283,8 +2283,6 @@ describe('supports http with nodejs', function () {
       }
     });
 
-    this.timeout(10000);
-
     it('should merge request http2Options with its instance config', async () => {
       const {data} = await http2Axios.get('/', {
         http2Options: {
