@@ -299,6 +299,21 @@ export interface AxiosProgressEvent {
   event?: BrowserProgressEvent;
   lengthComputable: boolean;
 }
+export type RetryBackoffMode = 'exponential' | 'linear' | 'fixed' | 'none';
+export type RetryJitterMode = 'full' | 'equal' | 'none';
+
+export interface RetryConfig {
+  retries?: number | ((error: any, attempt: number) => number);
+  retryDelay?: number | ((error: any, attempt: number, response?: AxiosResponse) => number);
+  retryCondition?: (error: any, attempt: number, response?: AxiosResponse) => boolean;
+  shouldResetTimeout?: boolean;
+  methods?: string[];
+  respectRetryAfter?: boolean;
+  backoff?: RetryBackoffMode;
+  jitter?: RetryJitterMode;
+  maxRetryAfter?: number;
+}
+
 
 type Milliseconds = number;
 
@@ -369,6 +384,7 @@ export interface AxiosRequestConfig<D = any> {
   withXSRFToken?: boolean | ((config: InternalAxiosRequestConfig) => boolean | undefined);
   parseReviver?: (this: any, key: string, value: any) => any;
   fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
+    retry?: RetryConfig;
 }
 
 // Alias

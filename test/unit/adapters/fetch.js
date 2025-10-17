@@ -35,6 +35,58 @@ describe('supports fetch with nodejs', function () {
     server = null;
   });
 
+  describe('retry', () => {
+    it('should retry 503 and then succeed', async () => {
+      let hit = 0;
+
+      server = await startHTTPServer((req, res) => {
+        hit++;
+        if (hit === 1) {
+          res.statusCode = 503;
+          res.end('Service Unavailable');
+        } else {
+          res.statusCode = 200;
+          res.end('OK');
+        }
+      });
+
+      const {data, status} = await fetchAxios.get('/', {
+        retry: { retries: 1, retryDelay: 0, backoff: 'fixed', jitter: 'none' }
+      });
+
+      assert.strictEqual(status, 200);
+      assert.strictEqual(data, 'OK');
+      assert.strictEqual(hit, 2);
+    });
+
+    it('should cancel during backoff', async () => {
+      let hit = 0;
+
+      server = await startHTTPServer((req, res) => {
+        hit++;
+        res.statusCode = 429;
+        res.setHeader('Retry-After', '1');
+        res.end('Too Many Requests');
+      });
+
+      const controller = new AbortController();
+
+      const p = fetchAxios.get('/', {
+        signal: controller.signal,
+        retry: { retries: 2, respectRetryAfter: true, maxRetryAfter: 60_000 }
+      }).then(() => assert.fail('should not resolve'))
+        .catch(err => {
+          assert.ok(axios.isCancel(err) || err.code === 'ERR_CANCELED');
+        });
+
+      await setTimeoutAsync(20);
+      controller.abort();
+      await p;
+
+      assert.strictEqual(hit, 1);
+    });
+  });
+
   describe('responses', async () => {
     it(`should support text response type`, async () => {
       const originalData = 'my data';

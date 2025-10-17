@@ -2350,4 +2350,55 @@ describe('supports http with nodejs', function () {
       assert.deepStrictEqual(data, {foo: 'success'});
     });
   });
+
+  describe('retry', function () {
+    it('should retry 429 with Retry-After and succeed on second attempt', async function () {
+      let hit = 0;
+
+      server = await startHTTPServer((req, res) => {
+        hit++;
+        if (hit === 1) {
+          res.statusCode = 429;
+          res.setHeader('Retry-After', '0');
+          return res.end('Too Many Requests');
+        }
+        res.statusCode = 200;
+        res.end('OK');
+      });
+
+      const {data, status} = await axios.get(LOCAL_SERVER_URL + '/', {
+        retry: { retries: 1, respectRetryAfter: true, backoff: 'fixed', jitter: 'none', retryDelay: 0 }
+      });
+
+      assert.strictEqual(status, 200);
+      assert.strictEqual(data, 'OK');
+      assert.strictEqual(hit, 2);
+    });
+
+    it('should cancel during backoff wait', async function () {
+      let hit = 0;
+
+      server = await startHTTPServer((req, res) => {
+        hit++;
+        res.statusCode = 503;
+        res.end('Service Unavailable');
+      });
+
+      const controller = new AbortController();
+
+      const p = axios.get(LOCAL_SERVER_URL + '/', {
+        signal: controller.signal,
+        retry: { retries: 2, backoff: 'fixed', jitter: 'none', retryDelay: 1000 }
+      }).then(() => assert.fail('should not resolve'))
+        .catch(err => {
+          assert.ok(axios.isCancel(err) || err.code === 'ERR_CANCELED');
+        });
+
+      await setTimeoutAsync(50);
+      controller.abort();
+      await p;
+
+      assert.strictEqual(hit, 1);
+    });
+  });
 });

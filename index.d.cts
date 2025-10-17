@@ -368,6 +368,21 @@ declare namespace axios {
     lengthComputable: boolean;
   }
 
+  type RetryBackoffMode = 'exponential' | 'linear' | 'fixed' | 'none';
+  type RetryJitterMode = 'full' | 'equal' | 'none';
+
+  interface RetryConfig {
+    retries?: number | ((error: any, attempt: number) => number);
+    retryDelay?: number | ((error: any, attempt: number, response?: AxiosResponse) => number);
+    retryCondition?: (error: any, attempt: number, response?: AxiosResponse) => boolean;
+    shouldResetTimeout?: boolean;
+    methods?: string[];
+    respectRetryAfter?: boolean;
+    backoff?: RetryBackoffMode;
+    jitter?: RetryJitterMode;
+    maxRetryAfter?: number;
+  }
+
   type Milliseconds = number;
 
   type AxiosAdapterName = 'fetch' | 'xhr' | 'http' | (string & {});
@@ -436,6 +451,7 @@ declare namespace axios {
         ((hostname: string, options: object) => Promise<[address: LookupAddressEntry | LookupAddressEntry[], family?: AddressFamily] | LookupAddress>);
     withXSRFToken?: boolean | ((config: InternalAxiosRequestConfig) => boolean | undefined);
     fetchOptions?: Omit<RequestInit, 'body' | 'headers' | 'method' | 'signal'> | Record<string, any>;
+    retry?: RetryConfig;
   }
 
   // Alias
