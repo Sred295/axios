@@ -599,4 +599,70 @@ describe('interceptors', function () {
 
     expect(instance.interceptors.response.handlers.length).toBe(0);
   });
+
+  it('should call onRequestError when a sync request interceptor throws', function () {
+    const callOrder = [];
+    const instance = axios.create({
+      baseURL: 'http://test.com/'
+    });  
+
+    instance.interceptors.request.use(
+      function () {
+        callOrder.push('request fulfilled');
+        throw new Error('async fail');
+      },
+      function (error) {
+        callOrder.push('request rejected');
+        return Promise.reject(error);
+      },
+      { synchronous: true }
+    );
+
+    instance.interceptors.response.use(
+      function (response) {
+        callOrder.push('response fulfilled');
+        return response;
+      },
+      function (error) {
+        callOrder.push('response rejected');
+        return Promise.reject(error);
+      },
+      { synchronous: true }
+    );
+    instance.get('/foo').catch(function () {
+      expect(callOrder).toEqual(['request fulfilled', 'request rejected']);
+    });
+  });
+
+  it('should call onRequestError when an async request interceptor throws', function () {
+    const callOrder = [];
+    const instance = axios.create({
+      baseURL: 'http://test.com/'
+    });  
+
+    instance.interceptors.request.use(
+      async function () {
+        callOrder.push('request fulfilled');
+        throw new Error('async fail');
+      },
+      function (error) {
+        callOrder.push('request rejected');
+        return Promise.reject(error);
+      }
+    );
+
+    instance.interceptors.response.use(
+      function (response) {
+        callOrder.push('response fulfilled');
+        return response;
+      },
+      function (error) {
+        callOrder.push('response rejected');
+        return Promise.reject(error);
+      }
+    );
+    instance.get('/foo').catch(function () {
+      expect(callOrder).toEqual(['request fulfilled', 'request rejected']);
+    });
+  });
 });
