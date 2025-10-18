@@ -1,5 +1,6 @@
-var parseHeaders = require('../../../lib/helpers/parseHeaders');
-var assert = require('assert');
+import assert from 'assert';
+import parseHeaders from '../../../lib/helpers/parseHeaders.js';
+
 
 describe('parseHeaders - Content-Disposition', function () {
   it('should extract simple filename', function () {

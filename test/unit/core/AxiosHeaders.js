@@ -469,3 +469,20 @@ describe('AxiosHeaders', function () {
     });
   });
 });
+describe('AxiosHeaders.getAttachmentFilename', function () {
+  it('should extract simple filename', function () {
+    const headers = new AxiosHeaders({ 'Content-Disposition': 'attachment; filename="test.txt"' });
+    assert.strictEqual(headers.getAttachmentFilename(), 'test.txt');
+  });
+
+  it('should extract UTF-8 encoded filename', function () {
+    const headers = new AxiosHeaders({ 'Content-Disposition': "attachment; filename*=UTF-8''résumé.pdf" });
+    assert.strictEqual(headers.getAttachmentFilename(), 'résumé.pdf');
+  });
+
+  it('should return null when header missing', function () {
+    const headers = new AxiosHeaders({});
+    assert.strictEqual(headers.getAttachmentFilename(), null);
+  });
+});
+
