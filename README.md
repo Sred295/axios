@@ -1700,15 +1700,44 @@ export async function load({ fetch }) {
   return { post };
 }
 ```
+## 📦 Semver
 
-## Semver
+Since Axios has reached `v1.0.0`, we fully follow [Semantic Versioning (SemVer)](https://semver.org/).
 
-Since Axios has reached a `v.1.0.0` we will fully embrace semver as per the spec [here](https://semver.org/)
+This means:
 
-## Promises
+- **PATCH** version (`x.y.Z`) – Bug fixes and backward-compatible updates.
+- **MINOR** version (`x.Y.z`) – New features added in a backward-compatible way.
+- **MAJOR** version (`X.y.z`) – Breaking changes or major API updates.
 
-axios depends on a native ES6 Promise implementation to be [supported](https://caniuse.com/promises).
-If your environment doesn't support ES6 Promises, you can [polyfill](https://github.com/jakearchibald/es6-promise).
+You can safely update within the same major version (for example, `1.2.0 → 1.3.5`) without breaking your code.
+
+> 💡 **Tip:**  
+> To stay updated automatically while avoiding breaking changes, install Axios with:
+>
+> ```bash
+> npm install axios@^1.0.0
+> ```
+> The `^` symbol ensures you get the latest **minor** and **patch** releases, but not major ones.
+
+---
+
+## ⚙️ Promises
+
+Axios uses native [ES6 Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to handle asynchronous HTTP requests.
+
+### ✅ Example (Using Promises)
+
+```js
+axios.get('/user')
+  .then(function (response) {
+    console.log('Data:', response.data);
+  })
+  .catch(function (error) {
+    console.error('Error:', error);
+  });
+```
+
 
 ## TypeScript
 
