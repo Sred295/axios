@@ -87,6 +87,7 @@
     - [🔥 Custom fetch](#-custom-fetch)
       - [🔥 Using with Tauri](#-using-with-tauri)
       - [🔥 Using with SvelteKit](#-using-with-sveltekit-)
+  - [🔥 HTTP2](#-http2)
   - [Semver](#semver)
   - [Promises](#promises)
   - [TypeScript](#typescript)
@@ -96,15 +97,15 @@
 
 ## Features
 
-- Make [XMLHttpRequests](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) from the browser
-- Make [http](https://nodejs.org/api/http.html) requests from node.js
-- Supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API
-- Intercept request and response
-- Transform request and response data
-- Cancel requests
-- Automatic transforms for [JSON](https://www.json.org/json-en.html) data
-- 🆕 Automatic data object serialization to `multipart/form-data` and `x-www-form-urlencoded` body encodings
-- Client side support for protecting against [XSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery)
+- **Browser Requests:** Make [XMLHttpRequests](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) directly from the browser.  
+- **Node.js Requests:** Make [http](https://nodejs.org/api/http.html) requests from Node.js environments.  
+- **Promise-based:** Fully supports the [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) API for easier asynchronous code.  
+- **Interceptors:** Intercept requests and responses to add custom logic or transform data.  
+- **Data Transformation:** Transform request and response data automatically.  
+- **Request Cancellation:** Cancel requests using built-in mechanisms.  
+- **Automatic JSON Handling:** Automatically serializes and parses [JSON](https://www.json.org/json-en.html) data.  
+- **Form Serialization:** 🆕 Automatically serializes data objects to `multipart/form-data` or `x-www-form-urlencoded` formats.  
+- **XSRF Protection:** Client-side support to protect against [Cross-Site Request Forgery](https://en.wikipedia.org/wiki/Cross-site_request_forgery).
 
 ## Browser Support
 
@@ -1700,6 +1701,34 @@ export async function load({ fetch }) {
 
   return { post };
 }
+```
+
+## 🔥 HTTP2
+
+In version `1.13.0`, experimental `HTTP2` support was added to the `http` adapter. 
+The `httpVersion` option is now available to select the protocol version used.
+Additional native options for the internal `session.request()` call can be passed via the `http2Options` config.
+This config also includes the custom `sessionTimeout` parameter, which defaults to `1000ms`.
+
+```js
+const form = new FormData();
+
+    form.append('foo', '123');
+
+    const {data, headers, status} = await axios.post('https://httpbin.org/post', form, {
+      httpVersion: 2,
+      http2Options: {
+        // rejectUnauthorized: false,
+        // sessionTimeout: 1000
+      },
+      onUploadProgress(e) {
+        console.log('upload progress', e);
+      },
+      onDownloadProgress(e) {
+        console.log('download progress', e);
+      },
+      responseType: 'arraybuffer'
+    });
 ```
 
 ## Semver
