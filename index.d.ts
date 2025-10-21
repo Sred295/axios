@@ -347,6 +347,7 @@ export interface AxiosRequestConfig<D = any> {
   transport?: any;
   httpAgent?: any;
   httpsAgent?: any;
+  asyncConfig?: boolean;
   proxy?: AxiosProxyConfig | false;
   cancelToken?: CancelToken;
   decompress?: boolean;

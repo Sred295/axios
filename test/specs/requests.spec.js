@@ -63,6 +63,56 @@ describe('requests', function () {
     });
   });
 
+  describe('asyncConfig option', function() {
+    it('should use synchronous config resolution by default', function (done) {
+      axios({
+        url: '/foo'
+      });
+      
+      // Request should be available immediately without setTimeout
+      const request = jasmine.Ajax.requests.mostRecent();
+      expect(request).toBeDefined();
+      expect(request.url).toBe('/foo');
+      done();
+    });
+
+    it('should use synchronous config resolution when asyncConfig is false', function (done) {
+      axios({
+        url: '/foo',
+        asyncConfig: false
+      });
+      
+      // Request should be available immediately without setTimeout
+      const request = jasmine.Ajax.requests.mostRecent();
+      expect(request).toBeDefined();
+      expect(request.url).toBe('/foo');
+      done();
+    });
+
+    it('should use asynchronous config resolution when asyncConfig is true', function (done) {
+      axios({
+        url: '/foo',
+        asyncConfig: true
+      }).then(function () {
+        fail(new Error('should not resolve immediately'));
+      }, function (err) {
+        fail(new Error('should not reject'));
+      });
+      
+      // Request should not be available immediately
+      const request = jasmine.Ajax.requests.mostRecent();
+      expect(request).toBeUndefined();
+      
+      // Wait for async config resolution
+      setTimeout(() => {
+        const request = jasmine.Ajax.requests.mostRecent();
+        expect(request).toBeDefined();
+        expect(request.url).toBe('/foo');
+        done();
+      }, 0);
+    });
+  });
+
   describe('timeouts', function(){
     beforeEach(function () {
       jasmine.clock().install();

@@ -413,8 +413,9 @@ declare namespace axios {
     beforeRedirect?: (options: Record<string, any>, responseDetails: {headers: Record<string, string>, statusCode: HttpStatusCode}) => void;
     socketPath?: string | null;
     transport?: any;
-    httpAgent?: any;
-    httpsAgent?: any;
+  httpAgent?: any;
+  httpsAgent?: any;
+  asyncConfig?: boolean; // Default: false (synchronous config resolution)
     proxy?: AxiosProxyConfig | false;
     cancelToken?: CancelToken;
     decompress?: boolean;
