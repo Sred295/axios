@@ -34,8 +34,8 @@
         <input id="someNumber" type="number"></input>
       </div>
       <div class="form-group">
-        <label for="data">someSamllFile</label>
-        <input id="someSamllFile" type="file"></input>
+        <label for="data">someSmallFile</label>
+        <input id="someSmallFile" type="file"></input>
       </div>
       <div class="form-group">
         <label for="data">nested.someString</label>
@@ -76,7 +76,7 @@
 
           var someString = document.getElementById('someString').value;
           var someNumber = document.getElementById('someNumber').valueAsNumber;
-          var files = Array.from(document.getElementById('someSamllFile').files)
+          var files = Array.from(document.getElementById('someSmallFile').files)
           var nestedString = document.getElementById('nested.someString').value;
           var passAsFormData = document.querySelector('input[name="format"]:checked').value==="formData";
 
