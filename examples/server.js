@@ -68,12 +68,20 @@ function send404(res, body) {
 
 function pipeFileToResponse(res, file, type) {
   if (type) {
-    res.writeHead(200, {
-      'Content-Type': type
-    });
-  }
-  fs.createReadStream(path.join(__dirname, file)).pipe(res);
+    res.writeHead(200, { "Content-Type": type });
 }
+
+const stream = fs.createReadStream(path.join(__dirname, file));
+
+stream.on("error", (err) => {
+  console.error("Error while reading file:", err.message);
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("File not found or cannot be read.");
+});
+
+stream.pipe(res);
+}
+
 
 
 dirs = listDirs(__dirname);
