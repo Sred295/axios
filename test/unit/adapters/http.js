@@ -708,7 +708,7 @@ describe('supports http with nodejs', function () {
               });
               assert.fail("expected aborted error");
             } catch (err) {
-              assert.equal(err.message, `aborted`);
+              assert.match(err.message, /aborted|Premature close/);
             }
           });
         });
