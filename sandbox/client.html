@@ -47,12 +47,37 @@
         transition: all 0.4s ease; /* smooth transitions everywhere */
       }
 
-      body {
+     body {
         margin: 0;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: var(--bg-color);
         color: var(--text-color);
       }
+    pre {
+      min-height: 39px;
+      white-space: pre-wrap; /* wrap long lines instead of stretching the panel */
+      word-wrap: break-word;
+      overflow: auto;
+    }
+
+    .box{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 40px; /* Increased gap between input and response columns */
+    }
+
+    .response {
+      min-width: 0; /* prevents content overflow from pushing layout */
+      overflow-x: auto;
+    }
+
+    .header{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem; /* Added space below the header */
+    }
 
       /* 
    Input & Well Styles
