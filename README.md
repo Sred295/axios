@@ -1779,7 +1779,17 @@ You can use Gitpod, an online IDE(which is free for Open Source) for contributin
 
 ## Credits
 
-axios is heavily inspired by the [$http service](https://docs.angularjs.org/api/ng/service/$http) provided in [AngularJS](https://angularjs.org/). Ultimately axios is an effort to provide a standalone `$http`-like service for use outside of AngularJS.
+Axios is heavily inspired by the [$http service](https://docs.angularjs.org/api/ng/service/$http) provided in [AngularJS](https://angularjs.org/).  
+Ultimately, Axios is an effort to provide a standalone `$http`-like service for use outside of AngularJS.
+
+Additional credits and inspirations:
+
+- **Contributors**: Thanks to all the developers who have contributed to Axios over the years, helping improve stability, performance, and TypeScript support.  
+- **Promise-based design**: Axios builds on native JavaScript Promises for asynchronous request handling, making it easy to integrate with modern JavaScript and TypeScript applications.  
+- **Community feedback**: Many features, like request cancellation, interceptors, and automatic JSON parsing, were suggested and refined through community contributions.  
+
+This project thrives thanks to open-source collaboration and feedback from the developer community. Special thanks to everyone who has helped improve Axios’s documentation, testing, and TypeScript support.
+
 
 ## License
 
