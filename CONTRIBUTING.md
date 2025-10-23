@@ -24,6 +24,23 @@ Please update the [documentation](https://axios-http.com/docs/intro) accordingly
 - `npm run build` run rollup and bundle the source
 - `npm run version` prepare the code for release
 
+## Local Setup
+- Fork and clone the repository
+```bash
+> git clone https://github.com/<your-username>/axios.git
+```
+
+- Install dependencies with npm
+```bash
+> npm install
+```
+
+- Build local version
+```bash
+> npm build
+```
+- Now run example or sandbox as below.
+  
 ## Running Examples
 
 Examples are included in part to allow manual testing.
