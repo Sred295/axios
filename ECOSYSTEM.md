@@ -28,13 +28,19 @@ This is a list of axios related libraries and resources. If you have a suggestio
 * [axios-debug-log](https://github.com/Gerhut/axios-debug-log) - Axios interceptor of logging requests & responses by debug.
 * [axios-curlirize](https://www.npmjs.com/package/axios-curlirize) - Logs axios requests as curl commands, also adds a property to the response object with the curl command as value.
 
-### React and redux
+### React and Redux
 
-* [axios-hooks](https://github.com/simoneb/axios-hooks) - 🦆 React hooks for axios, with built-in support for server side rendering
-* [react-hooks-axios](https://github.com/use-hooks/react-hooks-axios) - Custom React Hooks for Axios.js
+* [@react-cmpt/react-request-hook](https://github.com/react-cmpt/react-request-hook) - A lightweight React hook plugin for Axios.
+* [axios-hooks](https://github.com/simoneb/axios-hooks) - 🦆 React hooks for Axios, with built-in support for server-side rendering.
+* [react-axios](https://github.com/simoneb/axios-react) - Provides `<AxiosProvider>` and `<AxiosRequest>` components for declarative Axios requests in React.
+* [react-hooks-axios](https://github.com/use-hooks/react-hooks-axios) - Custom React Hooks for Axios.js.
+* [react-query](https://tanstack.com/query/latest) - Data-fetching and caching library for React, works seamlessly with Axios.
+* [redux-axios-middleware](https://github.com/svrcekmichal/redux-axios-middleware) - Redux middleware for fetching data with Axios HTTP client.
 * [redux-saga-requests](https://github.com/klis87/redux-saga-requests) - Redux-Saga addon to simplify handling of AJAX requests.
-* [redux-axios-middleware](https://github.com/svrcekmichal/redux-axios-middleware) - Redux middleware for fetching data with axios HTTP client
-* [@react-cmpt/react-request-hook](https://github.com/react-cmpt/react-request-hook) - A React hook plugin for axios. Lightweight and less change.
+* [redux-toolkit-query](https://redux-toolkit.js.org/rtk-query/overview) - RTK Query with caching, invalidation, and support for Axios as a base query.
+* [swr](https://swr.vercel.app/) - React Hooks library for data fetching with caching, revalidation, and Axios support.
+* [use-axios-client](https://github.com/TimothyGu/use-axios-client) - Simple, type-safe React hook wrapper around Axios.
+
 
 ### Unit testing
 
