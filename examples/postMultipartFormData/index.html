@@ -104,7 +104,7 @@
     addValueToData("someString", someString, someString.length > 0);
     addValueToData("someNumber", someNumber, !isNaN(someNumber));
     if (files.length) addValueToData("someSmallFile", files[0], true);
-    addValueToData("nested.someString", nestedString, nestedString.length > 0);
+    addValueToData("nested.someString", nestedString, nestedString !== undefined && nestedString !== null);
 
     const errorOutput = document.getElementById("errorOutput");
 
