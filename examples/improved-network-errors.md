@@ -1,5 +1,5 @@
 
- Overview for this docs :
+Overview of this document:
 This document explains a simple approach to make Axios network errors more helpful and human-readable.  
 By default, Axios shows a generic `"Network Error"` message for many failures.  
 This can be confusing, as it doesn't explain "what actually went wrong" (e.g., no internet, timeout, CORS issue, etc.).  
