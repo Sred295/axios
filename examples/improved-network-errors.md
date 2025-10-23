@@ -1,16 +1,16 @@
+# Overview of this document:
 
-Overview of this document:
 This document explains a simple approach to make Axios network errors more helpful and human-readable.  
 By default, Axios shows a generic `"Network Error"` message for many failures.  
-This can be confusing, as it doesn't explain "what actually went wrong" (e.g., no internet, timeout, CORS issue, etc.).  
+This can be confusing because it doesn't explain "what actually went wrong" (e.g., no internet, a timeout, a CORS issue, etc.).  
 
-Our approach adds clear, categorized error messages for different network issues.
+Our approach adds clear, categorised error messages for different network issues.
 
 ---
 
 ==> Problem
 Axios currently throws the same `Network Error` message for many different cases:
-- Internet is disconnected  
+- The Internet is disconnected  
 - DNS lookup fails  
 - Server is down or refusing connections  
 - CORS blocked requests  
@@ -29,7 +29,6 @@ We created a small wrapper function called `enhanceNetworkError()` that:
 
 The wrapper is used inside an Axios instance via a Response interceptor.
 
-
 -> How It Works
 
 1. When Axios throws an error, the interceptor catches it.  
@@ -47,8 +46,6 @@ The wrapper is used inside an Axios instance via a Response interceptor.
 -> Example Usage
 
 ```javascript
-import { createEnhancedClient } from './examples/network-error-enhancer.js';
-
 const api = createEnhancedClient({ baseURL: 'https://example.com' });
 
 api.get('/data')
@@ -57,3 +54,4 @@ api.get('/data')
     console.error(err.code);            // e.g., ERR_TIMEOUT
     console.error(err.detailedMessage); // e.g., "The request took too long to respond."
   });
+```
