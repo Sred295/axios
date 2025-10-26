@@ -229,21 +229,9 @@
   </div>
 </div>
 
-<footer class="footer">
-    <div class="footer-left">
-        <p class="footer-brand-axios">AXIOS</p><p class="footer-brand-sandbox"> | Sandbox</p>
-        <p class="footer-copyright">© <span id="year">2025</span> Axios. All rights reserved.</p>
-    </div>
-    <nav class="footer-nav">
-        <ul>
-            <li><a href="https://axios-http.com/docs/intro" target="_blank" rel="noopener noreferrer">Docs</a></li>
-            <li><a href="https://github.com/axios/axios" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-            <li><a href="https://axios-http.com/" target="_blank" rel="noopener noreferrer">Website</a></li>
-        </ul>
-    </nav>
-</footer>
-
+<!-- Footer will be inserted by sandbox/footer.js -->
 <script src="/axios.js"></script>
+<script src="footer.js"></script>
 <script>
   // Original sandbox script (untouched)
   (function () {
@@ -374,17 +362,18 @@
     syncParamsAndData();
   })();
 
-  // New script for theme toggle and footer year
+  // New script for theme toggle
   (function() {
     const themeToggle = document.getElementById('theme-toggle');
-    const yearSpan = document.getElementById('year');
-
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
     });
-
-    yearSpan.textContent = new Date().getFullYear();
   })();
+
+  // Initialize sandbox footer (append to body)
+  if (window.AxiosFooter && typeof window.AxiosFooter.init === 'function') {
+    window.AxiosFooter.init(document.body);
+  }
 </script>
 </body>
 </html>
