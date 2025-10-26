@@ -91,11 +91,28 @@ function requestHandler(req, res) {
       break;
 
     case '/axios.js':
-      pipeFileToResponse(res, '../dist/axios.js', 'text/javascript');
+      // Try to serve the built axios from ../dist; if missing, serve a tiny fetch-based shim
+      try {
+        const distPath = path.join(path.resolve(), 'dist', 'axios.js');
+        if (fs.existsSync(distPath)) {
+          pipeFileToResponse(res, '../dist/axios.js', 'text/javascript');
+        } else {
+          // Lightweight shim for sandbox usage (returns Promise resolving to { data })
+          res.writeHead(200, { 'Content-Type': 'text/javascript' });
+          res.end("window.axios = function(options){ return fetch(options.url, { method: options.method||'GET', headers: options.headers, body: options.data ? JSON.stringify(options.data) : undefined }).then(async function(r){ var data; try { data = await r.json(); } catch(e){ data = await r.text(); } return { data: data, status: r.status, statusText: r.statusText, headers: {}, config: options }; }); };");
+        }
+      } catch (e) {
+        res.writeHead(500);
+        res.end('/* server error: ' + String(e.message) + ' */');
+      }
       break;
 
     case '/axios.js.map':
       pipeFileToResponse(res, '../dist/axios.js.map', 'text/javascript');
+      break;
+
+    case '/footer.js':
+      pipeFileToResponse(res, './footer.js', 'text/javascript');
       break;
 
     case '/api':
