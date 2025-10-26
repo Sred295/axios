@@ -1720,7 +1720,7 @@ const form = new FormData();
       http2Options: {
         // rejectUnauthorized: false,
         // sessionTimeout: 1000
-      }
+      },
       onUploadProgress(e) {
         console.log('upload progress', e);
       },
