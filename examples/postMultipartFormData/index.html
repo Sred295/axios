@@ -70,62 +70,59 @@
     <script src="/axios.min.js"></script>
     <script>
       (function () {
-        
         document.getElementById('post').onclick = function () {
-          document.getElementById("checkNetwork").classList.remove("hidden")
+    // Show network/loading indicator
+    document.getElementById("checkNetwork").classList.remove("hidden");
+    // Grab values from inputs
+        
+    const someString = document.getElementById('someString').value;
+    const someNumber = document.getElementById('someNumber').valueAsNumber;
+    const files = Array.from(document.getElementById('someSmallFile').files);
+    const nestedString = document.getElementById('nested.someString').value;
+    const passAsFormData = document.querySelector('input[name="format"]:checked').value === "formData";
 
-          var someString = document.getElementById('someString').value;
-          var someNumber = document.getElementById('someNumber').valueAsNumber;
-          var files = Array.from(document.getElementById('someSmallFile').files)
-          var nestedString = document.getElementById('nested.someString').value;
-          var passAsFormData = document.querySelector('input[name="format"]:checked').value==="formData";
+    const data = passAsFormData ? new FormData() : {};
 
-          var data = passAsFormData? new FormData() : {}
+    // Helper to add value to FormData or plain object
+    function addValueToData(key, val, isValDefined) {
+      if (!isValDefined) return;
 
-          function addValueToData(key, val, isValDefined){
-            if (!isValDefined){
-              return 
-            }
+      if (passAsFormData) {
+        data.append(key, val);
+      } else {
+        const keys = key.split(".");
+        if (keys.length === 1) {
+          data[key] = val;
+        } else {
+          // Preserve existing nested objects if any
+          data[keys[0]] = data[keys[0]] || {};
+          data[keys[0]][keys[1]] = val;
+        }
+      }
+    }
 
-            if(passAsFormData){
-              data.append(key, val)
-            } else {
+    addValueToData("someString", someString, someString.length > 0);
+    addValueToData("someNumber", someNumber, !isNaN(someNumber));
+    if (files.length) addValueToData("someSmallFile", files[0], true);
+    addValueToData("nested.someString", nestedString, nestedString !== undefined && nestedString !== null);
 
-              var keys = key.split(".")
-              if (keys.length===1){
-                data[key] = val
-              } else {
-                data[keys[0]]={
-                  [keys[1]]: val
-                }
-              }
-            }
+    const errorOutput = document.getElementById("errorOutput");
 
-          }
-
-          addValueToData("someString", someString, someString.length)
-          addValueToData("someNumber", someNumber, !isNaN(someNumber))
-          if (files.length){
-            addValueToData("someSmallFile", files[0], true)
-          }
-          addValueToData("nested.someString", nestedString, nestedString.length)
-
-          var errorOutput = document.getElementById("errorOutput")
-
-          axios({
-            url: '/postMultipartFormData/server', 
-            data: data, 
-            method: "post",
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-            .then(function (res) {
-              errorOutput.innerHTML = "";
-            })
-            .catch(function (err) {
-              errorOutput.innerHTML = err.message;
-            });
-        };
-      })();
-    </script>
+    axios({
+      url: '/postMultipartFormData/server',
+      data: data,
+      method: "post",
+      headers: passAsFormData ? { "Content-Type": "multipart/form-data" } : {},
+    })
+      .then(res => {
+        errorOutput.innerHTML = "Successfully posted!";
+      })
+      .catch(err => {
+        console.error("Error posting data:", err);
+        errorOutput.innerHTML = `${err.message}`;
+      });
+  };
+})();
+</script>
   </body>
 </html>
