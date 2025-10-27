@@ -1,6 +1,6 @@
 {
   "name": "axios",
-  "version": "1.12.2",
+  "version": "1.13.0",
   "description": "Promise based HTTP client for the browser and node.js",
   "main": "index.js",
   "exports": {
@@ -190,7 +190,7 @@
     "Remco Haszing (https://github.com/remcohaszing)",
     "Rikki Gibson (https://github.com/RikkiGibson)",
     "Willian Agostini (https://github.com/WillianAgostini)",
-    "Yasu Flores (https://github.com/yasuf)"
+    "Ben Carp (https://github.com/carpben)"
   ],
   "sideEffects": false,
   "release-it": {
