@@ -6,9 +6,7 @@
 ### Bug Fixes
 
 * **fetch:** prevent TypeError when config.env is undefined ([#7155](https://github.com/axios/axios/issues/7155)) ([015faec](https://github.com/axios/axios/commit/015faeca9f26db76f9562760f04bb9f8229f4db1))
-* **http2:** fix possible race condition when handling http2 stream on almost timed out session by improving timeout out algorithm; ([#7186](https://github.com/axios/axios/issues/7186)) ([d000fbf](https://github.com/axios/axios/commit/d000fbfd0722a9c3bd0bcea3451c6d515813635d))
 * resolve issue [#7131](https://github.com/axios/axios/issues/7131) (added spacing in mergeConfig.js) ([#7133](https://github.com/axios/axios/issues/7133)) ([9b9ec98](https://github.com/axios/axios/commit/9b9ec98548d93e9f2204deea10a5f1528bf3ce62))
-* sandbox ui updated ([#7175](https://github.com/axios/axios/issues/7175)) ([7b197ef](https://github.com/axios/axios/commit/7b197ef6ce8e448e6b748749055269e97b10d009))
 
 
 ### Features
@@ -1327,4 +1325,5 @@ This functionality is considered as a fix.
 - [Marco Weber](https://github.com/mrcwbr)
 - [Luca Pizzini](https://github.com/lpizzinidev)
 - [Willian Agostini](https://github.com/WillianAgostini)
+
 - [Huyen Nguyen](https://github.com/huyenltnguyen)
