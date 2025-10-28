@@ -1702,6 +1702,30 @@ export async function load({ fetch }) {
 }
 ```
 
+#### 🔥 Using with React Native
+
+When using Axios in React Native (especially in Expo Go on iOS simulator), you may encounter network errors. It's recommended to use the fetch adapter instead of the default XHR adapter:
+
+```js
+import axios from 'axios';
+
+// Create a custom instance with fetch adapter
+const apiClient = axios.create({
+  adapter: 'fetch'
+});
+
+// Use the custom instance for all requests
+apiClient.get('https://api.example.com/data')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+```
+
+This avoids issues with the XHR adapter in React Native environments and ensures better compatibility with iOS simulators.
+
 ## Semver
 
 Since Axios has reached a `v.1.0.0` we will fully embrace semver as per the spec [here](https://semver.org/)
