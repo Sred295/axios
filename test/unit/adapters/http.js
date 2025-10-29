@@ -2665,6 +2665,23 @@ describe('supports http with nodejs', function () {
       });
     });
   });
+
+  it('should not abort stream on settle rejection', async () => {
+    server = await startHTTPServer((req, res) => {
+      res.statusCode = 404;
+      res.end('OK');
+    });
+
+    try {
+      await axios.get(LOCAL_SERVER_URL, {
+        responseType: 'stream'
+      });
+
+      assert.fail('should be rejected');
+    } catch(err) {
+      assert.strictEqual(await getStream(err.response.data), 'OK');
+    }
+  });
 });
 
 
