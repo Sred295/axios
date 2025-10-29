@@ -2423,7 +2423,7 @@ describe('supports http with nodejs', function () {
     });
 
     it('should support request cancellation', async function (){
-      if (typeof AbortSignal !== 'function') {
+      if (typeof AbortSignal !== 'function' || !AbortSignal.timeout) {
         this.skip();
       }
 
@@ -2525,13 +2525,17 @@ describe('supports http with nodejs', function () {
 
       it("should use different sessions for different authorities", async() => {
         server = await startHTTPServer((req, res) => {
-          setTimeout(() => res.end('OK'), 1000);
+          setTimeout(() => {
+            res.end('OK');
+          }, 2000);
         }, {
           useHTTP2: true
         });
 
         server2 = await startHTTPServer((req, res) => {
-          setTimeout(() => res.end('OK'), 1000);
+          setTimeout(() => {
+            res.end('OK');
+          }, 2000);
         }, {
           useHTTP2: true,
           port: SERVER_PORT2
@@ -2559,7 +2563,9 @@ describe('supports http with nodejs', function () {
 
       it("should use different sessions for requests with different http2Options set", async() => {
         server = await startHTTPServer((req, res) => {
-          setTimeout(() => res.end('OK'), 1000);
+          setTimeout(() => {
+            res.end('OK')
+          }, 1000);
         }, {
           useHTTP2: true
         });
@@ -2639,6 +2645,8 @@ describe('supports http with nodejs', function () {
           }
         });
 
+        const data1 = await getStream(response1.data);
+
         await setTimeoutAsync(5000);
 
         const response2 = await http2Axios.get(LOCAL_SERVER_URL, {
@@ -2648,17 +2656,31 @@ describe('supports http with nodejs', function () {
           }
         });
 
+        const data2 = await getStream(response2.data);
+
         assert.notStrictEqual(response1.data.session, response2.data.session);
 
-        assert.deepStrictEqual(
-          await Promise.all([
-            getStream(response1.data),
-            getStream(response2.data)
-          ]),
-          ['OK', 'OK']
-        );
+        assert.strictEqual(data1, 'OK');
+        assert.strictEqual(data2, 'OK');
       });
     });
+  });
+
+  it('should not abort stream on settle rejection', async () => {
+    server = await startHTTPServer((req, res) => {
+      res.statusCode = 404;
+      res.end('OK');
+    });
+
+    try {
+      await axios.get(LOCAL_SERVER_URL, {
+        responseType: 'stream'
+      });
+
+      assert.fail('should be rejected');
+    } catch(err) {
+      assert.strictEqual(await getStream(err.response.data), 'OK');
+    }
   });
 });
 
