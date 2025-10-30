@@ -317,7 +317,7 @@ export type LookupAddress = string | LookupAddressEntry;
 
 export interface AxiosRequestConfig<D = any> {
   url?: string;
-  method?: Method | string;
+  method?: Method | (string & {});
   baseURL?: string;
   allowAbsoluteUrls?: boolean;
   transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
