@@ -57,15 +57,30 @@ describe('formDataToJSON', function () {
     formData.append('constructor.prototype.y', 'value');
 
     expect(formDataToJSON(formData)).toEqual({
-      foo: ['1', '2'],
-      constructor: {
-        prototype: {
-          y: 'value'
-        }
-      }
+      foo: ['1', '2']
     });
 
     expect({}.x).toEqual(undefined);
     expect({}.y).toEqual(undefined);
+  });
+
+  it('should block all dangerous prototype properties', () => {
+    const formData = new FormData();
+
+    formData.append('__proto__.polluted', 'dangerous');
+    formData.append('constructor.polluted', 'dangerous');
+    formData.append('prototype.polluted', 'dangerous');
+    formData.append('constructor.prototype.polluted', 'dangerous');
+    formData.append('prototype.constructor.polluted', 'dangerous');
+
+    const result = formDataToJSON(formData);
+
+    // All dangerous properties should be blocked
+    expect(result).toEqual({});
+    
+    // Verify no pollution occurred
+    expect({}.polluted).toEqual(undefined);
+    expect(Array.prototype.polluted).toEqual(undefined);
+    expect(Object.prototype.polluted).toEqual(undefined);
   });
 });
