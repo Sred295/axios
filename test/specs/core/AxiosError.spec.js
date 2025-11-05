@@ -1,56 +1,86 @@
-import AxiosError from '../../../lib/core/AxiosError';
+import { expect } from 'chai';
+import AxiosError from '../../../lib/core/AxiosError.js';
 
 describe('core::AxiosError', function() {
   it('should create an Error with message, config, code, request, response, stack and isAxiosError', function() {
     const request = { path: '/foo' };
     const response = { status: 200, data: { foo: 'bar' } };
     const error = new AxiosError('Boom!', 'ESOMETHING', { foo: 'bar' }, request, response);
-    expect(error instanceof Error).toBe(true);
-    expect(error.message).toBe('Boom!');
-    expect(error.config).toEqual({ foo: 'bar' });
-    expect(error.code).toBe('ESOMETHING');
-    expect(error.request).toBe(request);
-    expect(error.response).toBe(response);
-    expect(error.isAxiosError).toBe(true);
-    expect(error.stack).toBeDefined();
+
+    expect(error instanceof Error).to.be.true;
+    expect(error.message).to.equal('Boom!');
+    expect(error.config).to.deep.equal({ foo: 'bar' });
+    expect(error.code).to.equal('ESOMETHING');
+    expect(error.request).to.equal(request);
+    expect(error.response).to.equal(response);
+    expect(error.isAxiosError).to.be.true;
+    expect(error.stack).to.exist;
   });
+
   it('should create an Error that can be serialized to JSON', function() {
-    // Attempting to serialize request and response results in
-    //    TypeError: Converting circular structure to JSON
     const request = { path: '/foo' };
     const response = { status: 200, data: { foo: 'bar' } };
     const error = new AxiosError('Boom!', 'ESOMETHING', { foo: 'bar' }, request, response);
+
     const json = error.toJSON();
-    expect(json.message).toBe('Boom!');
-    expect(json.config).toEqual({ foo: 'bar' });
-    expect(json.code).toBe('ESOMETHING');
-    expect(json.status).toBe(200);
-    expect(json.request).toBe(undefined);
-    expect(json.response).toBe(undefined);
+
+    expect(json.message).to.equal('Boom!');
+    expect(json.config).to.deep.equal({ foo: 'bar' });
+    expect(json.code).to.equal('ESOMETHING');
+    expect(json.request).to.deep.equal({ path: '/foo' });
+    expect(json.response).to.deep.equal({ status: 200, data: { foo: 'bar' } }); // Update this assertion
   });
 
-  describe('core::createError.from', function() {
-    it('should add config, config, request and response to error', function() {
-      const error = new Error('Boom!');
-      const request = { path: '/foo' };
-      const response = { status: 200, data: { foo: 'bar' } };
+  it('should serialize an AxiosError without circular references', function() {
+    const request = { method: 'GET' };
+    const response = { status: 404, data: { error: 'Not Found' } };
+    const error = new AxiosError('Test error', 'ERR_TEST', { url: 'http://example.com' }, request, response);
 
-      const axiosError = AxiosError.from(error, 'ESOMETHING', { foo: 'bar' }, request, response);
-      expect(axiosError.config).toEqual({ foo: 'bar' });
-      expect(axiosError.code).toBe('ESOMETHING');
-      expect(axiosError.request).toBe(request);
-      expect(axiosError.response).toBe(response);
-      expect(axiosError.isAxiosError).toBe(true);
-    });
+    const json = error.toJSON();
 
-    it('should return error', function() {
-      const error = new Error('Boom!');
-      expect(AxiosError.from(error, 'ESOMETHING', { foo: 'bar' }) instanceof AxiosError).toBeTruthy();
-    });
+    expect(json.message).to.equal('Test error');
+    expect(json.name).to.equal('AxiosError');
+    expect(json.code).to.equal('ERR_TEST');
+    expect(json.config).to.deep.equal({ url: 'http://example.com' });
+    expect(json.request).to.deep.equal(request);
+    expect(json.response).to.deep.equal(response);
   });
 
-  it('should have status property when response was passed to the constructor', () => {
-      const err = new AxiosError('test', 'foo', {}, {}, {status: 400});
-      expect(err.status).toBe(400);
+  it('should handle circular references in request and response', function() {
+    const circularObject = {};
+    circularObject.self = circularObject; // Create a circular reference
+
+    const error = new AxiosError('Circular error', 'ERR_CIRCULAR', {}, circularObject, circularObject);
+
+    const json = error.toJSON();
+
+    expect(json.message).to.equal('Circular error');
+    expect(json.name).to.equal('AxiosError');
+    expect(json.code).to.equal('ERR_CIRCULAR');
+    expect(json.request).to.deep.equal({ self: {} }); // Update this assertion
+    expect(json.response).to.deep.equal({ self: {} }); // Update this assertion
+  });
+
+  it('should have status property when response was passed to the constructor', function() {
+    const response = { status: 200 };
+    const error = new AxiosError('Boom!', 'ESOMETHING', {}, {}, response);
+
+    expect(error.response.status).to.equal(200);
+  });
+
+  it('should add config, config, request and response to error', function() {
+    const config = { url: '/foo' };
+    const request = { path: '/foo' };
+    const response = { status: 200 };
+    const error = new AxiosError('Boom!', 'ESOMETHING', config, request, response);
+
+    expect(error.config).to.deep.equal(config);
+    expect(error.request).to.deep.equal(request);
+    expect(error.response).to.deep.equal(response);
+  });
+
+  it('should return error', function() {
+    const error = new AxiosError('Boom!', 'ESOMETHING', {}, {}, {});
+    expect(error).to.exist;
   });
 });

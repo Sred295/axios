@@ -904,6 +904,42 @@ axios.get('/user/12345')
   });
 ```
 
+### AxiosError
+
+The `AxiosError` class represents errors that occur during an Axios request.
+
+#### Properties
+- `message` (string): The error message.
+- `name` (string): The name of the error (`AxiosError`).
+- `code` (string): The error code (e.g., `ECONNABORTED`).
+- `config` (object): The Axios request configuration.
+- `request` (object): The request object (if available).
+- `response` (object): The response object (if available).
+
+#### `toJSON()` Method
+The `toJSON()` method serializes the `AxiosError` object into a JSON-safe structure. It:
+- Removes circular references from `request` and `response` objects.
+- Excludes the `cause` property from the serialized output.
+
+Example:
+```javascript
+const axios = require('axios');
+
+axios.get('http://nonexistent-domain.invalid')
+  .catch(error => {
+    console.log(JSON.stringify(error));
+    // Output:
+    // {
+    //   "message": "Request failed with status code 404",
+    //   "name": "AxiosError",
+    //   "code": "ERR_NETWORK",
+    //   "config": { ... },
+    //   "request": { ... },
+    //   "response": { ... }
+    // }
+  });
+  ```
+
 ## Cancellation
 
 ### AbortController
