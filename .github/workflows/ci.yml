@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x, 18.x, 20.x, 22.x]
+        node-version: [12.x, 14.x, 16.x, 18.x, 20.x, 22.x, 24.x]
       fail-fast: false
 
     steps:
@@ -57,5 +57,15 @@ jobs:
         if: steps.changed-ignored.outputs.only_modified == 'false'
       - run: npm ci
         if: steps.changed-ignored.outputs.only_modified == 'false'
-      - run: npm test
+      - run: npm run build
+        if: steps.changed-ignored.outputs.only_modified == 'false'
+      - name: Run Server tests
+        run: npm run test:node
+        if: steps.changed-ignored.outputs.only_modified == 'false'
+    # We run browser tests only on one version of the node, since client tests do not depend on the server environment.
+      - name: Run browser tests
+        run: npm run test:browser
+        if: steps.changed-ignored.outputs.only_modified == 'false' && matrix.node-version == '22.x'
+      - name: Run package tests
+        run: npm run test:package
         if: steps.changed-ignored.outputs.only_modified == 'false'
