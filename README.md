@@ -813,6 +813,41 @@ axios.interceptors.request.use(function (config) {
 
 > **Note:** options parameter(having `synchronous` and `runWhen` properties) is only supported for request interceptors at the moment.
 
+### Interceptor Execution Order
+
+**Important:** Interceptors have different execution orders depending on their type!
+
+Request interceptors are executed in **reverse order** (LIFO - Last In, First Out). This means the _last_ interceptor added is executed **first**.
+
+Response interceptors are executed in the **order they were added** (FIFO - First In, First Out). This means the _first_ interceptor added is executed **first**.
+
+Example:
+
+```js
+const instance = axios.create();
+
+const interceptor = (id) => (base) => {
+  console.log(id);
+  return base;
+}
+
+instance.interceptors.request.use(interceptor('Request Interceptor 1'));
+instance.interceptors.request.use(interceptor('Request Interceptor 2'));
+instance.interceptors.request.use(interceptor('Request Interceptor 3'));
+instance.interceptors.response.use(interceptor('Response Interceptor 1'));
+instance.interceptors.response.use(interceptor('Response Interceptor 2'));
+instance.interceptors.response.use(interceptor('Response Interceptor 3'));
+
+// Console output:
+// Request Interceptor 3
+// Request Interceptor 2
+// Request Interceptor 1
+// [HTTP request is made]
+// Response Interceptor 1
+// Response Interceptor 2
+// Response Interceptor 3
+```
+
 ### Multiple Interceptors
 
 Given you add multiple response interceptors
