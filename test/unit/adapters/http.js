@@ -2682,6 +2682,21 @@ describe('supports http with nodejs', function () {
       assert.strictEqual(await getStream(err.response.data), 'OK');
     }
   });
+
+  describe('keep-alive', () => {
+    it('should not fail with "socket hang up" when using timeouts', async () => {
+      server = await startHTTPServer(async (req, res) => {
+        if (req.url === '/wait') {
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+        res.end('ok');
+      })
+
+      const baseURL = LOCAL_SERVER_URL;
+      await axios.get('/1', {baseURL, timeout: 1000});
+      await axios.get(`/wait`, {baseURL, timeout: 0});
+    }, 15000);
+  });
 });
 
 
