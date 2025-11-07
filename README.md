@@ -199,26 +199,16 @@ Using unpkg CDN:
 
 ## Example
 
-> **Note**: CommonJS usage
-> In order to gain the TypeScript typings (for intellisense / autocomplete) while using CommonJS imports with `require()`, use the following approach:
-
 ```js
 import axios from 'axios';
 //const axios = require('axios'); // legacy way
 
-// Make a request for a user with a given ID
-axios.get('/user?ID=12345')
-  .then(function (response) {
-    // handle success
-    console.log(response);
-  })
-  .catch(function (error) {
-    // handle error
-    console.log(error);
-  })
-  .finally(function () {
-    // always executed
-  });
+try {
+  const response = await axios.get('/user?ID=12345');
+  console.log(response);
+} catch (error) {
+  console.error(error);
+}
 
 // Optionally the request above could also be done as
 axios.get('/user', {
@@ -253,16 +243,11 @@ async function getUser() {
 Performing a `POST` request
 
 ```js
-axios.post('/user', {
-    firstName: 'Fred',
-    lastName: 'Flintstone'
-  })
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+const response = await axios.post('/user', {
+  firstName: 'Fred',
+  lastName: 'Flintstone'
+});
+console.log(response);
 ```
 
 Performing multiple concurrent requests
@@ -303,14 +288,12 @@ axios({
 
 ```js
 // GET request for remote image in node.js
-axios({
+const response = await axios({
   method: 'get',
   url: 'https://bit.ly/2mTM3nY',
   responseType: 'stream'
-})
-  .then(function (response) {
-    response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-  });
+});
+response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
 ```
 
 ##### axios(url[, config])
@@ -671,14 +654,12 @@ The response for a request contains the following information.
 When using `then`, you will receive the response as follows:
 
 ```js
-axios.get('/user/12345')
-  .then(function (response) {
-    console.log(response.data);
-    console.log(response.status);
-    console.log(response.statusText);
-    console.log(response.headers);
-    console.log(response.config);
-  });
+const response = await axios.get('/user/12345')
+console.log(response.data);
+console.log(response.status);
+console.log(response.statusText);
+console.log(response.headers);
+console.log(response.config);
 ```
 
 When using `catch`, or passing a [rejection callback](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) as second parameter of `then`, the response will be available through the `error` object as explained in the [Handling Errors](#handling-errors) section.
@@ -732,7 +713,8 @@ instance.get('/longRequest', {
 
 ## Interceptors
 
-You can intercept requests or responses before they are handled by `then` or `catch`.
+You can intercept requests or responses before methods like `.get()` or `.post()`
+resolve their promises (before code inside `then` or `catch`, or after `await`)
 
 ```js
 
@@ -812,6 +794,41 @@ axios.interceptors.request.use(function (config) {
 ```
 
 > **Note:** options parameter(having `synchronous` and `runWhen` properties) is only supported for request interceptors at the moment.
+
+### Interceptor Execution Order
+
+**Important:** Interceptors have different execution orders depending on their type!
+
+Request interceptors are executed in **reverse order** (LIFO - Last In, First Out). This means the _last_ interceptor added is executed **first**.
+
+Response interceptors are executed in the **order they were added** (FIFO - First In, First Out). This means the _first_ interceptor added is executed **first**.
+
+Example:
+
+```js
+const instance = axios.create();
+
+const interceptor = (id) => (base) => {
+  console.log(id);
+  return base;
+}
+
+instance.interceptors.request.use(interceptor('Request Interceptor 1'));
+instance.interceptors.request.use(interceptor('Request Interceptor 2'));
+instance.interceptors.request.use(interceptor('Request Interceptor 3'));
+instance.interceptors.response.use(interceptor('Response Interceptor 1'));
+instance.interceptors.response.use(interceptor('Response Interceptor 2'));
+instance.interceptors.response.use(interceptor('Response Interceptor 3'));
+
+// Console output:
+// Request Interceptor 3
+// Request Interceptor 2
+// Request Interceptor 1
+// [HTTP request is made]
+// Response Interceptor 1
+// Response Interceptor 2
+// Response Interceptor 3
+```
 
 ### Multiple Interceptors
 

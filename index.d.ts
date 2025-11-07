@@ -349,7 +349,7 @@ export interface AxiosRequestConfig<D = any> {
   httpsAgent?: any;
   asyncCookieConfig?: boolean;
   proxy?: AxiosProxyConfig | false;
-  cancelToken?: CancelToken;
+  cancelToken?: CancelToken | undefined;
   decompress?: boolean;
   transitional?: TransitionalOptions;
   signal?: GenericAbortSignal;
