@@ -50,14 +50,14 @@ describe('core::AxiosError', function() {
     });
   });
 
-  it('should be a native error as checked by the NodeJS `isNativeError` function', async function (){
+  it('should be a native error as checked by the NodeJS `isNativeError` function', function (){
     if((typeof process !== 'undefined') && (process.release.name === 'node')){
       let {isNativeError} = require('node:util/types');
       expect(isNativeError(new AxiosError("My Axios Error"))).toBeTruthy();
     }
   });
 
-  it('should create an error using one of the static class properties as an error code', async function (){
+  it('should create an error using one of the static class properties as an error code', function (){
     const myError = new AxiosError("My Axios Error", AxiosError.ECONNABORTED);
     expect(myError.code).toEqual(AxiosError.ECONNABORTED);
   });
