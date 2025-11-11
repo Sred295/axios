@@ -1,5 +1,4 @@
 import defaults from '../../lib/defaults';
-import utils from '../../lib/utils';
 import AxiosHeaders from '../../lib/core/AxiosHeaders';
 
 describe('defaults', function () {
@@ -178,10 +177,25 @@ describe('defaults', function () {
     const instance = axios.create();
     axios.defaults.baseURL = 'http://example.org/';
 
+    instance.get('/foo/users');
+
+    getAjaxRequest().then(function (request) {
+      expect(request.url).toBe('/foo/users');
+      done();
+    });
+  });
+
+  it('should resistant to ReDoS attack', function (done) {
+    const instance = axios.create();
+    const start = performance.now();
+    const slashes = '/'.repeat(100000);
+    instance.defaults.baseURL = '/' + slashes + 'bar/';
     instance.get('/foo');
 
     getAjaxRequest().then(function (request) {
-      expect(request.url).toBe('/foo');
+      const elapsedTimeMs = performance.now() - start;
+      expect(elapsedTimeMs).toBeLessThan(20);
+      expect(request.url).toBe('/' + slashes + 'bar/foo');
       done();
     });
   });
