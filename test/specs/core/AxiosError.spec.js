@@ -46,6 +46,7 @@ describe('core::AxiosError', function() {
     expect(json.response).to.deep.equal(response);
   });
 
+
   it('should handle circular references in request and response', function() {
     const circularObject = {};
     circularObject.self = circularObject; // Create a circular reference
