@@ -1,75 +1,134 @@
-import util from "util";
-import cp from "child_process";
 import Handlebars from "handlebars";
 import fs from "fs/promises";
 import prettyBytes from 'pretty-bytes';
-import {gzipSize} from 'gzip-size';
+import {getBlobHistory} from './repo.js';
+import pacote from "pacote";
+import zlib from "zlib";
+import tar from "tar-stream";
+import { Readable } from "stream";
 
-const exec = util.promisify(cp.exec);
+const FILE_SIZE_DIFF_THRESHOLD = 512; // 0.5KB
 
-const getBlobHistory = async (filepath, maxCount= 5) => {
-  const log = (await exec(
-    `git log --max-count=${maxCount} --no-walk --tags=v* --oneline --format=%H%d -- ${filepath}`
-  )).stdout;
+const readJSONFile = async (file) => JSON.parse(String(await fs.readFile(file)));
 
-  const commits = [];
+const {version} = await readJSONFile('./package.json');
 
-  let match;
-
-  const regexp = /^(\w+) \(tag: (v?[.\d]+)\)$/gm;
-
-  while((match = regexp.exec(log))) {
-    commits.push({
-      sha: match[1],
-      tag: match[2],
-      size: await getBlobSize(filepath, match[1])
-    })
-  }
-
-  return commits;
+const parseVersion = (tag) => {
+  const [, major, minor, patch] = /^v?(\d+)\.(\d+)\.(\d+)/.exec(tag) || [];
+  return [major, minor, patch];
 }
 
-const getBlobSize = async (filepath, sha ='HEAD') => {
-  const size = (await exec(
-    `git cat-file -s ${sha}:${filepath}`
-  )).stdout;
+const [MAJOR_NUMBER] = parseVersion(version);
 
-  return size ? +size : 0;
+async function getFilesFromNPM(pkg) {
+  const tgzData = await pacote.tarball(pkg); // Buffer з npm
+  const files = {};
+
+  return new Promise((resolve, reject) => {
+    const extract = tar.extract();
+
+    extract.on("entry", (header, stream, next) => {
+      const buffers = [];
+
+      stream.on('data', (buffer) => {
+        buffers.push(buffer);
+      });
+
+      stream.on("end", () => {
+        const content = Buffer.concat(buffers);
+
+        const gzipped = zlib.gzipSync(content);
+
+        files[header.name.replace(/^package\//, '')] = {
+          gzip: gzipped.length,
+          compressed: header.size ? gzipped.length / header.size : 1,
+          ...header
+        };
+
+        next();
+      });
+    });
+
+    Readable.from(tgzData)
+      .pipe(zlib.createGunzip())
+      .pipe(extract)
+      .on("error", reject)
+      .on('finish', () => resolve(files));
+  });
 }
 
-const generateFileReport = async (files) => {
-  const stat = {};
 
-  for(const [name, file] of Object.entries(files)) {
-    const commits = await getBlobHistory(file);
 
-    stat[file] = {
+
+const generateFileReport = async (files, historyCount = 3) => {
+  const allFilesStat = {};
+  const commits = (await getBlobHistory('package.json', historyCount)).filter(({tag}) => {
+    return MAJOR_NUMBER === parseVersion(tag)[0];
+  });
+  const warns = [];
+
+  const npmHistory = {};
+
+  await Promise.all(commits.map(async ({tag}) => {
+    npmHistory[tag] = await getFilesFromNPM(`axios@${tag.replace(/^v/, '')}`);
+  }));
+
+  for(const [name, filename] of Object.entries(files)) {
+    const file = await fs.stat(filename).catch(console.warn);
+    const gzip = file ? zlib.gzipSync(await fs.readFile(filename)).length : 0;
+
+    const stat = allFilesStat[filename] = file ? {
       name,
-      size: (await fs.stat(file)).size,
-      path: file,
-      gzip: await gzipSize(String(await fs.readFile(file))),
-      commits,
-      history: commits.map(({tag, size}) => `${prettyBytes(size)} (${tag})`).join(' ← ')
+      size: file.size,
+      path: filename,
+      gzip,
+      compressed: file.size ? gzip / file.size : 1,
+      history: commits.map(({tag}) => {
+        const files = npmHistory[tag];
+        const file = files && files[filename] || null;
+
+        return {
+          tag,
+          ...file
+        };
+      })
+    } : null;
+
+
+
+    if(stat.history[0]) {
+      const diff = stat.gzip - stat.history[0].gzip;
+
+      if (diff > FILE_SIZE_DIFF_THRESHOLD) {
+        warns.push({
+          filename,
+          sizeReport: true,
+          diff,
+          percent: stat.gzip ? diff / stat.gzip : 0,
+        });
+      }
     }
   }
 
-  return stat;
+  return {
+    version,
+    files: allFilesStat,
+    warns
+  };
 }
 
 const generateBody = async ({files, template = './templates/pr.hbs'} = {}) => {
-  const data = {
-    files: await generateFileReport(files)
-  };
+  const data = await generateFileReport(files);
 
-  Handlebars.registerHelper('filesize', (bytes)=> prettyBytes(bytes));
+  Handlebars.registerHelper('filesize', (bytes)=> bytes != null ? prettyBytes(bytes) : '<unknown>');
+  Handlebars.registerHelper('percent', (value)=> Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : `---` );
 
   return Handlebars.compile(String(await fs.readFile(template)))(data);
 }
 
 console.log(await generateBody({
   files: {
-    'Browser build (UMD)' : './dist/axios.min.js',
-    'Browser build (ESM)' : './dist/esm/axios.min.js',
+    'Browser build (UMD)' : 'dist/axios.min.js',
+    'Browser build (ESM)' : 'dist/esm/axios.min.js',
   }
 }));
-
