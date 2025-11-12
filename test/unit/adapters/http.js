@@ -1377,9 +1377,9 @@ describe('supports http with nodejs', function () {
         .then(function(){
           fail('Does not throw');
         }, function (error) {
-          assert.strictEqual(error.message, 'Invalid proxy authorization')
-          assert.strictEqual(error.code, 'ERR_BAD_OPTION')
-          assert.deepStrictEqual(error.config.proxy, proxy)
+          assert.strictEqual(error.message, 'Invalid proxy authorization');
+          assert.strictEqual(error.code, 'ERR_BAD_OPTION');
+          assert.deepStrictEqual(error.config.proxy, proxy);
         })
     });
   });
