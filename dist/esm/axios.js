@@ -1,4 +1,4 @@
-// axios v0.28.0 Copyright (c) 2024 Matt Zabriskie
+// axios v0.30.2 Copyright (c) 2025 Matt Zabriskie
 var bind = function bind(fn, thisArg) {
   return function wrap() {
     return fn.apply(thisArg, arguments);
@@ -619,7 +619,7 @@ AxiosError.from = function(error, code, config, request, response, customProps) 
 var AxiosError_1 = AxiosError;
 
 /* eslint-env browser */
-var browser$1 = typeof self == 'object' ? self.FormData : window.FormData;
+var browser$1 = typeof self === 'object' ? self.FormData : window.FormData;
 
 // eslint-disable-next-line strict
 var FormData$1 = browser$1;
@@ -738,7 +738,7 @@ function toFormData(obj, formData, options) {
         key = removeBrackets(key);
 
         arr.forEach(function each(el, index) {
-          !utils.isUndefined(el) && formData.append(
+          !(utils.isUndefined(el) || el === null) && formData.append(
             // eslint-disable-next-line no-nested-ternary
             indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
             convertValue(el)
@@ -775,7 +775,7 @@ function toFormData(obj, formData, options) {
     stack.push(value);
 
     utils.forEach(value, function each(el, key) {
-      var result = !utils.isUndefined(el) && visitor.call(
+      var result = !(utils.isUndefined(el) || el === null) && visitor.call(
         formData, el, utils.isString(key) ? key.trim() : key, path, exposedHelpers
       );
 
@@ -869,12 +869,20 @@ var buildURL = function buildURL(url, params, options) {
 
   var _encode = options && options.encode || encode;
 
-  var serializerParams = utils.isURLSearchParams(params) ?
-    params.toString() :
-    new AxiosURLSearchParams_1(params, options).toString(_encode);
+  var serializeFn = options && options.serialize;
 
-  if (serializerParams) {
-    url += (url.indexOf('?') === -1 ? '?' : '&') + serializerParams;
+  var serializedParams;
+
+  if (serializeFn) {
+    serializedParams = serializeFn(params, options);
+  } else {
+    serializedParams = utils.isURLSearchParams(params) ?
+      params.toString() :
+      new AxiosURLSearchParams_1(params, options).toString(_encode);
+  }
+
+  if (serializedParams) {
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
   }
 
   return url;
@@ -1010,6 +1018,9 @@ function arrayToObject(arr) {
 function formDataToJSON(formData) {
   function buildPath(path, value, target, index) {
     var name = path[index++];
+
+    if (name === '__proto__') return true;
+
     var isNumericKey = Number.isFinite(+name);
     var isLast = index >= path.length;
     name = !name && utils.isArray(target) ? target.length : name;
@@ -1146,7 +1157,7 @@ var isAbsoluteURL = function isAbsoluteURL(url) {
  */
 var combineURLs = function combineURLs(baseURL, relativeURL) {
   return relativeURL
-    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    ? baseURL.replace(/\/?\/$/, '') + '/' + relativeURL.replace(/^\/+/, '')
     : baseURL;
 };
 
@@ -1157,10 +1168,13 @@ var combineURLs = function combineURLs(baseURL, relativeURL) {
  *
  * @param {string} baseURL The base URL
  * @param {string} requestedURL Absolute or relative URL to combine
+ * @param {boolean} allowAbsoluteUrls Set to true to allow absolute URLs
+ *
  * @returns {string} The combined full path
  */
-var buildFullPath = function buildFullPath(baseURL, requestedURL) {
-  if (baseURL && !isAbsoluteURL(requestedURL)) {
+var buildFullPath = function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
+  var isRelativeURL = !isAbsoluteURL(requestedURL);
+  if (baseURL && (isRelativeURL || allowAbsoluteUrls === false)) {
     return combineURLs(baseURL, requestedURL);
   }
   return requestedURL;
@@ -1336,7 +1350,7 @@ var xhr = function xhrAdapter(config) {
       requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
     }
 
-    var fullPath = buildFullPath(config.baseURL, config.url);
+    var fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
 
     request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
@@ -1489,7 +1503,7 @@ var xhr = function xhrAdapter(config) {
         if (!request) {
           return;
         }
-        reject(!cancel || cancel.type ? new CanceledError_1(null, config, req) : cancel);
+        reject(!cancel || cancel.type ? new CanceledError_1(null, config, request) : cancel);
         request.abort();
         request = null;
       };
@@ -1893,7 +1907,7 @@ var mergeConfig = function mergeConfig(config1, config2) {
 };
 
 var data = {
-  "version": "0.28.0"
+  "version": "0.30.2"
 };
 
 var VERSION = data.version;
@@ -2034,7 +2048,18 @@ Axios.prototype.request = function request(configOrUrl, config) {
 
   var paramsSerializer = config.paramsSerializer;
 
-  utils.isFunction(paramsSerializer) && (config.paramsSerializer = {serialize: paramsSerializer});
+  if (paramsSerializer != null) {
+    if (utils.isFunction(paramsSerializer)) {
+      config.paramsSerializer = {
+        serialize: paramsSerializer
+      };
+    } else {
+      validator.assertOptions(paramsSerializer, {
+        encode: validators.function,
+        serialize: validators.function
+      }, true);
+    }
+  }
 
   // filter out skipped interceptors
   var requestInterceptorChain = [];
@@ -2098,7 +2123,7 @@ Axios.prototype.request = function request(configOrUrl, config) {
 
 Axios.prototype.getUri = function getUri(config) {
   config = mergeConfig(this.defaults, config);
-  var fullPath = buildFullPath(config.baseURL, config.url);
+  var fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
   return buildURL(fullPath, config.params, config.paramsSerializer);
 };
 

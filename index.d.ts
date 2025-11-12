@@ -128,12 +128,14 @@ export interface CustomParamsSerializer {
 
 export interface ParamsSerializerOptions extends SerializerOptions {
   encode?: ParamEncoder;
+  serialize?: CustomParamsSerializer;
 }
 
 export interface AxiosRequestConfig<D = any> {
   url?: string;
   method?: Method | string;
   baseURL?: string;
+  allowAbsoluteUrls?: boolean;
   transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
   transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[];
   headers?: AxiosRequestHeaders;
