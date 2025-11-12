@@ -1376,7 +1376,7 @@ describe('supports http with nodejs', function () {
       return axios.get("https://test-domain.abc", {proxy})
         .then(function(){
           fail('Does not throw');
-        }, function (error) {          
+        }, function (error) {
           assert.strictEqual(error.message, 'Invalid proxy authorization')
           assert.strictEqual(error.code, 'ERR_BAD_OPTION')
           assert.deepStrictEqual(error.config.proxy, proxy)
