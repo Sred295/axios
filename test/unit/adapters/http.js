@@ -1373,7 +1373,7 @@ describe('supports http with nodejs', function () {
         }
       };
 
-      return axios.get("https://test-domain.abc", {proxy})
+      return axios.get('https://test-domain.abc', {proxy})
         .then(function(){
           fail('Does not throw');
         }, function (error) {
