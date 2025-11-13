@@ -315,6 +315,23 @@ export interface LookupAddressEntry {
 
 export type LookupAddress = string | LookupAddressEntry;
 
+export interface AxiosRetryConfig {
+  /**
+   * Number of times to retry the request (default: 3)
+   */
+  retries?: number;
+  /**
+   * Delay function that receives attempt number and returns delay in milliseconds.
+   * Default: (attempt) => attempt * 100
+   */
+  delay?: (attempt: number) => number;
+  /**
+   * Custom predicate to determine if a request should be retried.
+   * Receives the error and attempt number.
+   */
+  shouldRetry?: (error: AxiosError, attempt: number) => boolean;
+}
+
 export interface AxiosRequestConfig<D = any> {
   url?: string;
   method?: Method | string;
@@ -373,6 +390,7 @@ export interface AxiosRequestConfig<D = any> {
   http2Options?: Record<string, any> & {
     sessionTimeout?: number;
   };
+  retry?: boolean | AxiosRetryConfig;
 }
 
 // Alias
