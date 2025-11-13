@@ -159,7 +159,7 @@ import axios from "axios";
 console.log(axios.isCancel("something"));
 ```
 
-If you use `require` for importing, **only default export is available**:
+If you use `require` for importing, **only the default export is available**:
 
 ```js
 const axios = require("axios");
@@ -382,9 +382,9 @@ These are the available config options for making requests. Only the `url` is re
   // `method` is the request method to be used when making the request
   method: 'get', // default
 
-  // `baseURL` will be prepended to `url` unless `url` is absolute and option `allowAbsoluteUrls` is set to true.
+  // `baseURL` will be prepended to `url` unless `url` is absolute and the option `allowAbsoluteUrls` is set to true.
   // It can be convenient to set `baseURL` for an instance of axios to pass relative URLs
-  // to methods of that instance.
+  // to the methods of that instance.
   baseURL: 'https://some-domain.com/api/',
 
   // `allowAbsoluteUrls` determines whether or not absolute URLs will override a configured `baseUrl`.
@@ -426,7 +426,7 @@ These are the available config options for making requests. Only the `url` is re
     // Custom encoder function which sends key/value pairs in an iterative fashion.
     encode?: (param: string): string => { /* Do custom operations here and return transformed string */ },
 
-    // Custom serializer function for the entire parameter. Allows user to mimic pre 1.x behaviour.
+    // Custom serializer function for the entire parameter. Allows the user to mimic pre 1.x behaviour.
     serialize?: (params: Record<string, any>, options?: ParamsSerializerOptions ),
 
     // Configuration for formatting array indexes in the params.
@@ -434,8 +434,8 @@ These are the available config options for making requests. Only the `url` is re
   },
 
   // `data` is the data to be sent as the request body
-  // Only applicable for request methods 'PUT', 'POST', 'DELETE , and 'PATCH'
-  // When no `transformRequest` is set, must be of one of the following types:
+  // Only applicable for request methods 'PUT', 'POST', 'DELETE', and 'PATCH'
+  // When no `transformRequest` is set, it must be of one of the following types:
   // - string, plain object, ArrayBuffer, ArrayBufferView, URLSearchParams
   // - Browser only: FormData, File, Blob
   // - Node only: Stream, Buffer, FormData (form-data package)
@@ -487,7 +487,7 @@ These are the available config options for making requests. Only the `url` is re
   // 'utf8', 'UTF8', 'utf16le', 'UTF16LE'
   responseEncoding: 'utf8', // default
 
-  // `xsrfCookieName` is the name of the cookie to use as a value for xsrf token
+  // `xsrfCookieName` is the name of the cookie to use as a value for the xsrf token
   xsrfCookieName: 'XSRF-TOKEN', // default
 
   // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
@@ -566,7 +566,7 @@ These are the available config options for making requests. Only the `url` is re
   // Use `false` to disable proxies, ignoring environment variables.
   // `auth` indicates that HTTP Basic auth should be used to connect to the proxy, and
   // supplies credentials.
-  // This will set an `Proxy-Authorization` header, overwriting any existing
+  // This will set a `Proxy-Authorization` header, overwriting any existing
   // `Proxy-Authorization` custom headers you have set using `headers`.
   // If the proxy server uses HTTPS, then you must set the protocol to `https`.
   proxy: {
@@ -638,7 +638,7 @@ These are the available config options for making requests. Only the `url` is re
 
 ## Response Schema
 
-The response for a request contains the following information.
+The response to a request contains the following information.
 
 ```js
 {
@@ -743,6 +743,11 @@ instance.interceptors.request.use(
   },
   function (error) {
     // Do something with request error
+instance.interceptors.request.use(function (config) {
+    // Do something before the request is sent
+    return config;
+  }, function (error) {
+    // Do something with the request error
     return Promise.reject(error);
   }
 );
@@ -756,6 +761,12 @@ instance.interceptors.response.use(
   },
   function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
+instance.interceptors.response.use(function (response) {
+    // Any status code that lies within the range of 2xx causes this function to trigger
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Any status codes that fall outside the range of 2xx cause this function to trigger
     // Do something with response error
     return Promise.reject(error);
   }
@@ -797,7 +808,7 @@ instance.interceptors.request.use(function () {
 
 When you add request interceptors, they are presumed to be asynchronous by default. This can cause a delay
 in the execution of your axios request when the main thread is blocked (a promise is created under the hood for
-the interceptor and your request gets put on the bottom of the call stack). If your request interceptors are synchronous you can add a flag
+the interceptor and your request gets put at the bottom of the call stack). If your request interceptors are synchronous you can add a flag
 to the options object that will tell axios to run the code synchronously and avoid any delays in request execution.
 
 ```js
@@ -831,7 +842,7 @@ axios.interceptors.request.use(
 );
 ```
 
-> **Note:** options parameter(having `synchronous` and `runWhen` properties) is only supported for request interceptors at the moment.
+> **Note:** The options parameter(having `synchronous` and `runWhen` properties) is only supported for request interceptors at the moment.
 
 ### Interceptor Execution Order
 
@@ -870,7 +881,7 @@ instance.interceptors.response.use(interceptor("Response Interceptor 3"));
 
 ### Multiple Interceptors
 
-Given you add multiple response interceptors
+Given that you add multiple response interceptors
 and when the response was fulfilled
 
 - then each interceptor is executed
@@ -882,11 +893,11 @@ and when the response was fulfilled
   - then the following rejection-interceptor is called
   - once caught, another following fulfill-interceptor is called again (just like in a promise chain).
 
-Read [the interceptor tests](./test/specs/interceptors.spec.js) for seeing all this in code.
+Read [the interceptor tests](./test/specs/interceptors.spec.js) to see all this in code.
 
 ## Error Types
 
-There are many different axios error messages that can appear that can provide basic information about the specifics of the error and where opportunities may lie in debugging.
+There are many different axios error messages that can appear which can provide basic information about the specifics of the error and where opportunities may lie in debugging.
 
 The general structure of axios errors is as follows:
 | Property | Definition |
@@ -897,6 +908,14 @@ The general structure of axios errors is as follows:
 | config | An axios config object with specific instance configurations defined by the user from when the request was made |
 | code | Represents an axios identified error. The table below lists out specific definitions for internal axios error. |
 | status | HTTP response status code. See [here](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for common HTTP response status code meanings.
+| Property  | Definition  |
+| -------- | ----------  |
+| message  | A quick summary of the error message and the status it failed with. |
+| name     | This defines where the error originated from. For axios, it will always be an 'AxiosError'. |
+| stack    | Provides the stack trace of the error. |
+| config   | An axios config object with specific instance configurations defined by the user from when the request was made |
+| code     | Represents an axios identified error. The table below lists specific definitions for internal axios error.  |
+| status   | HTTP response status code. See [here](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for common HTTP response status code meanings.
 
 Below is a list of potential axios identified error:
 
@@ -909,7 +928,7 @@ Below is a list of potential axios identified error:
 | ERR_INVALID_URL           | Invalid URL provided for axios request.                                                                                                                                                                                                                                                                                                                                                        |
 | ECONNABORTED              | Typically indicates that the request has been timed out (unless `transitional.clarifyTimeoutError` is set) or aborted by the browser or its plugin.                                                                                                                                                                                                                                            |
 | ERR_CANCELED              | Feature or method is canceled explicitly by the user using an AbortSignal (or a CancelToken).                                                                                                                                                                                                                                                                                                  |
-| ETIMEDOUT                 | Request timed out due to exceeding default axios timelimit. `transitional.clarifyTimeoutError` must be set to `true`, otherwise a generic `ECONNABORTED` error will be thrown instead.                                                                                                                                                                                                         |
+| ETIMEDOUT                 | Request timed out due to exceeding the default axios timelimit. `transitional.clarifyTimeoutError` must be set to `true`, otherwise a generic `ECONNABORTED` error will be thrown instead.                                                                                                                                                                                                         |
 | ERR_NETWORK               | Network-related issue. In the browser, this error can also be caused by a [CORS](https://developer.mozilla.org/ru/docs/Web/HTTP/Guides/CORS) or [Mixed Content](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content) policy violation. The browser does not allow the JS code to clarify the real reason for the error caused by security issues, so please check the console. |
 | ERR_FR_TOO_MANY_REDIRECTS | Request is redirected too many times; exceeds max redirects specified in axios configuration.                                                                                                                                                                                                                                                                                                  |
 | ERR_BAD_RESPONSE          | Response cannot be parsed properly or is in an unexpected format. Usually related to a response with `5xx` status code.                                                                                                                                                                                                                                                                        |
@@ -917,7 +936,7 @@ Below is a list of potential axios identified error:
 
 ## Handling Errors
 
-the default behavior is to reject every response that returns with a status code that falls out of the range of 2xx and treat it as an error.
+The default behavior is to reject every response that returns with a status code that falls out of the range of 2xx and treat it as an error.
 
 ```js
 axios.get("/user/12345").catch(function (error) {
@@ -962,7 +981,7 @@ axios.get("/user/12345").catch(function (error) {
 
 ### AbortController
 
-Starting from `v0.22.0` Axios supports AbortController to cancel requests in fetch API way:
+Starting from `v0.22.0` Axios supports AbortController to cancel requests in a fetch API way:
 
 ```js
 const controller = new AbortController();
@@ -1305,7 +1324,7 @@ All files will be sent with the same field names: `files[]`.
 
 ## 🆕 HTML Form Posting (browser)
 
-Pass HTML Form element as a payload to submit it as `multipart/form-data` content.
+Pass an HTML Form element as a payload to submit it as `multipart/form-data` content.
 
 ```js
 await axios.postForm(
@@ -1424,7 +1443,7 @@ const { data } = await axios.post(SERVER_URL, readableStream, {
 
 > **⚠️ Warning**
 > It is recommended to disable redirects by setting maxRedirects: 0 to upload the stream in the **node.js** environment,
-> as follow-redirects package will buffer the entire stream in RAM without following the "backpressure" algorithm.
+> as the follow-redirects package will buffer the entire stream in RAM without following the "backpressure" algorithm.
 
 ## 🆕 Rate limiting
 
@@ -1448,8 +1467,8 @@ const { data } = await axios.post(LOCAL_SERVER_URL, myBuffer, {
 
 Axios has its own `AxiosHeaders` class to manipulate headers using a Map-like API that guarantees caseless work.
 Although HTTP is case-insensitive in headers, Axios will retain the case of the original header for stylistic reasons
-and for a workaround when servers mistakenly consider the header's case.
-The old approach of directly manipulating headers object is still available, but deprecated and not recommended for future usage.
+and as a workaround when servers mistakenly consider the header's case.
+The old approach of directly manipulating the headers object is still available, but deprecated and not recommended for future usage.
 
 ### Working with headers
 
@@ -1543,6 +1562,7 @@ set(headers?: RawAxiosHeaders | AxiosHeaders | string, rewrite?: boolean);
 The `rewrite` argument controls the overwriting behavior:
 
 - `false` - do not overwrite if header's value is set (is not `undefined`)
+- `false` - do not overwrite if the header's value is set (is not `undefined`)
 - `undefined` (default) - overwrite the header unless its value is set to `false`
 - `true` - rewrite anyway
 
@@ -1631,7 +1651,7 @@ Returns `true` if at least one header has been cleared.
 If the headers object was changed directly, it can have duplicates with the same name but in different cases.
 This method normalizes the headers object by combining duplicate keys into one.
 Axios uses this method internally after calling each interceptor.
-Set `format` to true for converting headers name to lowercase and capitalize the initial letters (`cOntEnt-type` => `Content-Type`)
+Set `format` to true for converting header names to lowercase and capitalizing the initial letters (`cOntEnt-type` => `Content-Type`)
 
 ```js
 const headers = new AxiosHeaders({
@@ -1664,7 +1684,7 @@ Returns a new `AxiosHeaders` instance.
 toJSON(asStrings?: boolean): RawAxiosHeaders;
 ```
 
-Resolve all internal headers values into a new null prototype object.
+Resolve all internal header values into a new null prototype object.
 Set `asStrings` to true to resolve arrays as a string containing all elements, separated by commas.
 
 ### AxiosHeaders.from(thing?)
@@ -1720,7 +1740,7 @@ const fetchAxios = axios.create({
 const { data } = fetchAxios.get(url);
 ```
 
-The adapter supports the same functionality as `xhr` adapter, **including upload and download progress capturing**.
+The adapter supports the same functionality as the `xhr` adapter, **including upload and download progress capturing**.
 Also, it supports additional response types such as `stream` and `formdata` (if supported by the environment).
 
 ### 🔥 Custom fetch
