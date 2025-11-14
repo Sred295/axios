@@ -51,4 +51,25 @@ describe('transformResponse', function () {
             assert.strictEqual(result, data);
         });
     });
+    it('should throw a clear error message when JSON.parse fails on malformed JSON', function () {
+        var malformed = '{"name" : "Aditya"';
+        
+        var config = {
+            transitional: {
+                forcedJSONParsing: true,
+                silentJSONParsing: false
+            },
+            responseType: 'json',
+            response: {}
+        };
+
+        assert.throws(function () {
+            transformData(
+                malformed,
+                { 'content-type': 'application/json' },
+                200,
+                defaults.transformResponse.bind(config)
+            );
+        }, /Failed to prase JSON response\. Response was not valid JSON\./);  
+    });
 });
