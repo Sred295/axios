@@ -325,7 +325,7 @@ export interface AxiosRequestConfig<D = any> {
   transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
   transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[];
   headers?: (RawAxiosRequestHeaders & MethodsHeaders) | AxiosHeaders;
-  params?: any;
+  params?: Record<string, any> | URLSearchParams;
   paramsSerializer?: ParamsSerializerOptions | CustomParamsSerializer;
   data?: D;
   timeout?: Milliseconds;
