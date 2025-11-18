@@ -1469,16 +1469,26 @@ describe('supports http with nodejs', function () {
   });
 
   it('should support HTTPS protocol', function (done) {
-    server = http.createServer(function (req, res) {
+    var options = {
+      key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
+    };
+
+    server = https.createServer(options, function (req, res) {
       setTimeout(function () {
         res.end();
       }, 1000);
     }).listen(4444, function () {
-      axios.get('https://www.google.com')
+      axios.get('https://localhost:4444', {
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false
+        })
+      })
         .then(function (res) {
           assert.equal(res.request.agent.protocol, 'https:');
           done();
         })
+        .catch(done);
     })
   });
 
