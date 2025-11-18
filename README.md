@@ -902,6 +902,23 @@ axios.get('/user/12345')
   });
 ```
 
+Handling request timeouts with async/await:
+
+```js
+try {
+  const response = await axios.get('/api/data', { timeout: 2000 });
+  console.log(response.data);
+} catch (error) {
+  if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+    console.error('Request timed out');
+  } else {
+    console.error(error);
+  }
+}
+```
+
+> **Note:** By default, timeout errors use the `ECONNABORTED` error code. If you set `transitional.clarifyTimeoutError` to `true` in your config, timeout errors will use the `ETIMEDOUT` error code instead.
+
 Using the `validateStatus` config option, you can override the default condition (status >= 200 && status < 300) and define HTTP code(s) that should throw an error.
 
 ```js
