@@ -108,4 +108,20 @@ describe('progress events', function () {
       done();
     });
   });
+
+  it('should cap progress at 100% when loaded exceeds total', function () {
+    const { progressEventReducer } = require('../../lib/helpers/progressEventReducer.js');
+    let capturedProgress;
+    
+    const mockListener = (data) => {
+      capturedProgress = data.progress;
+    };
+
+    const [reducer] = progressEventReducer(mockListener, false, 1);
+
+    // Simulate scenario where loaded exceeds total (React Native bug)
+    reducer({ loaded: 712704, total: 400155, lengthComputable: true });
+
+    expect(capturedProgress).toBe(1); // Should be capped at 1 (100%)
+  });
 });
