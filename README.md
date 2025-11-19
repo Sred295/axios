@@ -1717,33 +1717,29 @@ export async function load({ fetch }) {
 }
 ```
 
-## 🔥 HTTP2
+#### 🔥 Using with React Native
 
-In version `1.13.0`, experimental `HTTP2` support was added to the `http` adapter. 
-The `httpVersion` option is now available to select the protocol version used.
-Additional native options for the internal `session.request()` call can be passed via the `http2Options` config.
-This config also includes the custom `sessionTimeout` parameter, which defaults to `1000ms`.
+When using Axios in React Native (especially in Expo Go on iOS simulator), you may encounter network errors. It's recommended to use the fetch adapter instead of the default XHR adapter:
 
 ```js
-const form = new FormData();
+import axios from 'axios';
 
-    form.append('foo', '123');
+// Create a custom instance with fetch adapter
+const apiClient = axios.create({
+  adapter: 'fetch'
+});
 
-    const {data, headers, status} = await axios.post('https://httpbin.org/post', form, {
-      httpVersion: 2,
-      http2Options: {
-        // rejectUnauthorized: false,
-        // sessionTimeout: 1000
-      },
-      onUploadProgress(e) {
-        console.log('upload progress', e);
-      },
-      onDownloadProgress(e) {
-        console.log('download progress', e);
-      },
-      responseType: 'arraybuffer'
-    });
+// Use the custom instance for all requests
+apiClient.get('https://api.example.com/data')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
 ```
+
+This avoids issues with the XHR adapter in React Native environments and ensures better compatibility with iOS simulators.
 
 ## Semver
 
