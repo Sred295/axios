@@ -576,10 +576,10 @@ export interface AxiosStatic extends AxiosInstance {
   isAxiosError: typeof isAxiosError;
   toFormData: typeof toFormData;
   formToJSON: typeof formToJSON;
+  mergeConfig: typeof mergeConfig;
   getAdapter: typeof getAdapter;
   CanceledError: typeof CanceledError;
   AxiosHeaders: typeof AxiosHeaders;
-  mergeConfig: typeof mergeConfig;
 }
 
 declare const axios: AxiosStatic;
