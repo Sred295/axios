@@ -348,6 +348,62 @@ describe('supports fetch with nodejs', function () {
     assert.ok(passed >= timeout - 5, `early cancellation detected (${passed} ms)`);
   });
 
+  it('should respect timeoutErrorMessage option', async () => {
+    server = await startHTTPServer(async (req, res) => {
+      await setTimeoutAsync(1000);
+      res.end('OK');
+    });
+
+    const timeout = 50;
+    const timeoutErrorMessage = 'request deadline exceeded';
+
+    await assert.rejects(async () => {
+      await fetchAxios('/', {
+        timeout,
+        timeoutErrorMessage
+      });
+    }, err => {
+      assert.strictEqual(err.message, timeoutErrorMessage);
+      assert.strictEqual(err.code, 'ECONNABORTED');
+      return true;
+    });
+  });
+
+  it('should default timeout error code to ECONNABORTED', async () => {
+    server = await startHTTPServer(async (req, res) => {
+      await setTimeoutAsync(1000);
+      res.end('OK');
+    });
+
+    await assert.rejects(async () => {
+      await fetchAxios('/', {
+        timeout: 50
+      });
+    }, err => {
+      assert.strictEqual(err.code, 'ECONNABORTED');
+      return true;
+    });
+  });
+
+  it('should switch timeout error code to ETIMEDOUT when clarifyTimeoutError=true', async () => {
+    server = await startHTTPServer(async (req, res) => {
+      await setTimeoutAsync(1000);
+      res.end('OK');
+    });
+
+    await assert.rejects(async () => {
+      await fetchAxios('/', {
+        timeout: 50,
+        transitional: {
+          clarifyTimeoutError: true
+        }
+      });
+    }, err => {
+      assert.strictEqual(err.code, 'ETIMEDOUT');
+      return true;
+    });
+  });
+
 
   it('should combine baseURL and url', async () => {
     server = await startHTTPServer();

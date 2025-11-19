@@ -32,7 +32,28 @@ describe('helpers::composeSignals', () => {
       signal.addEventListener('abort', resolve);
     });
 
-    assert.match(String(signal.reason), /timeout 100 of ms exceeded/);
+    assert.match(String(signal.reason), /timeout of 100ms exceeded/);
+  });
+
+  it('should respect transitional clarifyTimeoutError flag for timeout errors', async () => {
+    const signals = [
+      composeSignals([], 10),
+      composeSignals([], 10, {transitional: {clarifyTimeoutError: true}})
+    ];
+
+    const reasons = [];
+
+    for (const signal of signals) {
+      await new Promise(resolve => {
+        signal.addEventListener('abort', () => {
+          reasons.push(signal.reason);
+          resolve();
+        });
+      });
+    }
+
+    assert.strictEqual(reasons[0].code, 'ECONNABORTED');
+    assert.strictEqual(reasons[1].code, 'ETIMEDOUT');
   });
 
   it('should return undefined if signals and timeout are not provided', async () => {
