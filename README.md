@@ -65,6 +65,7 @@
   - [Interceptors](#interceptors)
     - [Multiple Interceptors](#multiple-interceptors)
   - [Handling Errors](#handling-errors)
+  - [Handling Timeouts](#handling-timeouts)
   - [Cancellation](#cancellation)
     - [AbortController](#abortcontroller)
     - [CancelToken 👎](#canceltoken-deprecated)
@@ -919,6 +920,27 @@ axios.get('/user/12345')
   .catch(function (error) {
     console.log(error.toJSON());
   });
+```
+
+## Handling Timeouts
+
+```js
+async function fetchWithTimeout() {
+  try {
+    const response = await axios.get('https://example.com/data', {
+      timeout: 5000 // 5 seconds
+    });
+
+    console.log('Response:', response.data);
+
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.code === 'ECONNABORTED') {
+      console.error('❌ Request timed out!');
+    } else {
+      console.error('❌ Error:', error.message);
+    }
+  }
+}
 ```
 
 ## Cancellation
