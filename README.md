@@ -1082,7 +1082,7 @@ The server will handle it as:
 If your backend body-parser (like `body-parser` of `express.js`) supports nested objects decoding, you will get the same object on the server-side automatically
 
 ```js
-  var app = express();
+  const app = express();
 
   app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
