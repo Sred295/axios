@@ -1014,6 +1014,74 @@ describe('supports http with nodejs', function () {
     });
   });
 
+  it('should support HTTPS requests through HTTP proxy (corporate proxy scenario)', function (done) {
+    var options = {
+      key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
+    };
+
+    server = https.createServer(options, function (req, res) {
+      res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+      res.end('12345');
+    }).listen(4444, function () {
+      // HTTP proxy that handles CONNECT tunneling for HTTPS requests
+      proxy = http.createServer(function (request, response) {
+        if (request.method === 'CONNECT') {
+          // Handle CONNECT tunneling for HTTPS
+          var parsed = url.parse('https://' + request.url);
+          var socket = net.createConnection({
+            host: parsed.hostname,
+            port: parsed.port || 443
+          }, function () {
+            response.writeHead(200, 'Connection Established');
+            response.end();
+            socket.pipe(request.socket);
+            request.socket.pipe(socket);
+          });
+
+          socket.on('error', function (err) {
+            response.writeHead(500);
+            response.end();
+            request.socket.end();
+          });
+        } else {
+          // Regular HTTP proxy
+          var parsed = url.parse(request.url);
+          var opts = {
+            host: parsed.hostname,
+            port: parsed.port,
+            path: parsed.path
+          };
+
+          http.get(opts, function (res) {
+            var body = '';
+            res.on('data', function (data) {
+              body += data;
+            });
+            res.on('end', function () {
+              response.setHeader('Content-Type', 'text/html; charset=UTF-8');
+              response.end(body + '6789');
+            });
+          });
+        }
+      }).listen(4000, function () {
+        // Make HTTPS request through HTTP proxy
+        // Should work automatically without requiring manual httpsAgent configuration
+        axios.get('https://localhost:4444/', {
+          proxy: {
+            host: 'localhost',
+            port: 4000,
+            protocol: 'http'
+          }
+          // No httpsAgent specified - should be auto-configured
+        }).then(function (res) {
+          assert.equal(res.data, '12345', 'should pass through HTTP proxy to HTTPS server');
+          done();
+        }).catch(done);
+      });
+    });
+  });
+
   it('should not pass through disabled proxy', function (done) {
     // set the env variable
     process.env.http_proxy = 'http://does-not-exists.example.com:4242/';

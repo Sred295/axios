@@ -261,6 +261,8 @@ declare namespace axios {
     port: number;
     auth?: AxiosBasicCredentials;
     protocol?: string;
+    hostname?: string;
+    rejectUnauthorized?: boolean;
   }
 
   type Method =

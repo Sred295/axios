@@ -127,6 +127,8 @@ export interface AxiosProxyConfig {
   port: number;
   auth?: AxiosBasicCredentials;
   protocol?: string;
+  hostname?: string;
+  rejectUnauthorized?: boolean;
 }
 
 export enum HttpStatusCode {
