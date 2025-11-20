@@ -511,6 +511,7 @@ export class Axios {
     request: AxiosInterceptorManager<InternalAxiosRequestConfig>;
     response: AxiosInterceptorManager<AxiosResponse>;
   };
+  create(config?: CreateAxiosDefaults): AxiosInstance;
   getUri(config?: AxiosRequestConfig): string;
   request<T = any, R = AxiosResponse<T>, D = any>(config: AxiosRequestConfig<D>): Promise<R>;
   get<T = any, R = AxiosResponse<T>, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<R>;
