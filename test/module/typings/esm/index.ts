@@ -675,6 +675,7 @@ for (const [header, value] of headers) {
   headers.y = 2;
 
   headers.get('x');
+  if (headers.getContentType() === 'application/json') {}
 })();
 
 // AxiosHeaders instance assignment
