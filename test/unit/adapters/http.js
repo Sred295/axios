@@ -43,6 +43,21 @@ const FileSpecCompliant = typeof File !== 'undefined' ? File : FilePolyfill;
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+import getStream from 'get-stream';
+
+function isIPv6Supported() {
+  return new Promise(resolve => {
+    const socket = net.createConnection({ host: '::1', port: 80 });
+    socket.on('error', () => resolve(false));
+    socket.on('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+  });
+}
+
+
 function setTimeoutAsync(ms) {
   return new Promise(resolve=> setTimeout(resolve, ms));
 }
@@ -100,13 +115,16 @@ describe('supports http with nodejs', function () {
     });
   });
 
-  it('should support IPv6 literal strings', function (done) {
+  it('should support IPv6 literal strings', async function (done) {
 
     var data = {
       firstName: 'Fred',
       lastName: 'Flintstone',
       emailAddr: 'fred@example.com'
     };
+     if (!(await isIPv6Supported())) {
+      this.skip(); // Skip if IPv6 not available
+    }
 
     server = http.createServer(function (req, res) {
       res.setHeader('Content-Type', 'application/json');
