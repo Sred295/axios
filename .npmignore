@@ -1,6 +1,7 @@
 **/*
 !/dist/**
 !/lib/**
+!/scripts/**
 !index.js
 !index.d.ts
 !index.d.cts
