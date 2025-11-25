@@ -455,6 +455,13 @@ These are the available config options for making requests. Only the `url` is re
   // `Authorization` custom headers you have set using `headers`.
   // Please note that only HTTP Basic auth is configurable through this parameter.
   // For Bearer tokens and such, use `Authorization` custom headers instead.
+  //
+  // When using an axios instance with `auth` configured, the `auth` property from
+  // the instance will be merged into the request config. If you need to override
+  // the instance's `auth` configuration with a custom `Authorization` header, you
+  // must explicitly set `auth: null` in the request config to prevent the instance's
+  // `auth` from overwriting your custom header. See the "Custom instance defaults"
+  // section below for more details.
   auth: {
     username: 'janedoe',
     password: 's00pers3cret'
@@ -690,6 +697,36 @@ const instance = axios.create({
 
 // Alter defaults after instance has been created
 instance.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+```
+
+#### Overriding instance `auth` configuration
+
+When an axios instance is created with an `auth` property configured, that configuration will be applied to all requests made with that instance. If you need to override the instance's `auth` configuration for a specific request (for example, to use a Bearer token instead of Basic auth), you must explicitly set `auth: null` in the request config. This prevents the instance's `auth` property from overwriting your custom `Authorization` header.
+
+```js
+// Create an instance with Basic auth configured
+const instance = axios.create({
+  baseURL: 'https://api.example.com',
+  auth: {
+    username: 'instance_user',
+    password: 'instance_password'
+  }
+});
+
+// This request will use the instance's Basic auth (the custom header will be ignored)
+instance.get('/endpoint', {
+  headers: {
+    Authorization: 'Bearer MY_SPECIAL_TOKEN' // This will be overwritten!
+  }
+});
+
+// To override with a custom Authorization header, set auth: null
+instance.get('/endpoint', {
+  auth: null, // Explicitly disable instance auth
+  headers: {
+    Authorization: 'Bearer MY_SPECIAL_TOKEN' // This will now be used
+  }
+});
 ```
 
 ### Config order of precedence
