@@ -375,6 +375,21 @@ export interface AxiosRequestConfig<D = any> {
   http2Options?: Record<string, any> & {
     sessionTimeout?: number;
   };
+  /**
+   * Enable request debugging/logging. When set to `true`, logs request details to console.
+   * When set to a function, uses that function as a custom logger.
+   * Useful for debugging 403 errors and comparing with curl commands.
+   * 
+   * @example
+   * // Enable default console logging
+   * axios.get('/api/data', { debug: true });
+   * 
+   * // Use custom logger
+   * axios.get('/api/data', { 
+   *   debug: (info) => console.log('Custom:', info) 
+   * });
+   */
+  debug?: boolean | ((message: string) => void);
 }
 
 // Alias
