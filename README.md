@@ -266,8 +266,23 @@ Promise.all([getUserAccount(), getUserPermissions()])
     const acct = results[0];
     const perm = results[1];
   });
+  
 ```
 
+### Simple GET example
+
+```js
+// GET request for JSON data
+import axios from 'axios';
+
+axios.get('https://api.github.com/repos/axios/axios')
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error('Request failed:', error);
+  });
+```
 ## axios API
 
 Requests can be made by passing the relevant config to `axios`.
