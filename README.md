@@ -507,6 +507,19 @@ These are the available config options for making requests. Only the `url` is re
     return status >= 200 && status < 300; // default
   },
 
+  // `debug` enables request debugging/logging. When set to `true`, logs detailed request
+  // information including method, URL, headers, and data to the console. When set to a
+  // function, uses that function as a custom logger. This is particularly useful for
+  // debugging 403 errors and comparing requests with curl commands.
+  // The debug output includes an equivalent curl command for easy testing.
+  debug: false, // default
+  // Example with default console logging:
+  // axios.get('/api/data', { debug: true });
+  // Example with custom logger:
+  // axios.get('/api/data', { 
+  //   debug: (message) => myLogger.log(message) 
+  // });
+
   // `maxRedirects` defines the maximum number of redirects to follow in node.js.
   // If set to 0, no redirects will be followed.
   maxRedirects: 21, // default
