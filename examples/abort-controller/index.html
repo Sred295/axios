@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Axios - AbortController Example</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .example {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .output {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 3px;
+      min-height: 50px;
+    }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Axios AbortController Examples</h1>
+  <p>Modern way to cancel HTTP requests using the AbortController API</p>
+
+  <!-- Example 1: Cancel Single Request -->
+  <div class="example">
+    <h2>1. Cancel a Single Request</h2>
+    <p>Start a delayed request and cancel it before completion</p>
+    <button onclick="startSingleRequest()">Start Request</button>
+    <button onclick="cancelSingleRequest()">Cancel Request</button>
+    <div class="output" id="output1">Ready...</div>
+  </div>
+
+  <!-- Example 2: Cancel Multiple Requests -->
+  <div class="example">
+    <h2>2. Cancel Multiple Concurrent Requests</h2>
+    <p>Start multiple requests and cancel all at once</p>
+    <button onclick="startMultipleRequests()">Start 3 Requests</button>
+    <button onclick="cancelMultipleRequests()">Cancel All</button>
+    <div class="output" id="output2">Ready...</div>
+  </div>
+
+  <!-- Example 3: Navigation Cancel -->
+  <div class="example">
+    <h2>3. Cancel on Navigation</h2>
+    <p>Simulates canceling a request when user navigates away</p>
+    <button onclick="startNavigationRequest()">Start Request</button>
+    <button onclick="simulateNavigation()">Simulate Navigation</button>
+    <div class="output" id="output3">Ready...</div>
+  </div>
+
+  <script>
+    // Example 1: Single Request Cancellation
+    let singleController;
+
+    function startSingleRequest() {
+      singleController = new AbortController();
+      document.getElementById('output1').innerHTML = 'Loading...';
+
+      axios.get('https://httpbin.org/delay/3', {
+        signal: singleController.signal
+      })
+      .then(response => {
+        document.getElementById('output1').innerHTML = 
+          '<span class="success">✓ Request completed successfully!</span>';
+      })
+      .catch(error => {
+        if (error.name === 'CanceledError') {
+          document.getElementById('output1').innerHTML = 
+            '<span class="error">✗ Request was cancelled</span>';
+        } else {
+          document.getElementById('output1').innerHTML = 
+            '<span class="error">✗ Error: ' + error.message + '</span>';
+        }
+      });
+    }
+
+    function cancelSingleRequest() {
+      if (singleController) {
+        singleController.abort();
+        console.log('Single request cancelled');
+      }
+    }
+
+    // Example 2: Multiple Requests Cancellation
+    let multipleController;
+
+    function startMultipleRequests() {
+      multipleController = new AbortController();
+      document.getElementById('output2').innerHTML = 'Loading 3 requests...';
+
+      const requests = [
+        axios.get('https://httpbin.org/delay/2', { signal: multipleController.signal }),
+        axios.get('https://httpbin.org/delay/3', { signal: multipleController.signal }),
+        axios.get('https://httpbin.org/delay/4', { signal: multipleController.signal })
+      ];
+
+      Promise.allSettled(requests)
+        .then(results => {
+          const cancelled = results.filter(r => r.status === 'rejected' && 
+            r.reason.name === 'CanceledError').length;
+          const fulfilled = results.filter(r => r.status === 'fulfilled').length;
+          
+          document.getElementById('output2').innerHTML = 
+            `<span class="success">Completed: ${fulfilled}</span><br>` +
+            `<span class="error">Cancelled: ${cancelled}</span>`;
+        });
+    }
+
+    function cancelMultipleRequests() {
+      if (multipleController) {
+        multipleController.abort();
+        console.log('All requests cancelled');
+      }
+    }
+
+    // Example 3: Navigation Simulation
+    let navigationController;
+
+    function startNavigationRequest() {
+      navigationController = new AbortController();
+      document.getElementById('output3').innerHTML = 'Fetching user data...';
+
+      axios.get('https://httpbin.org/delay/5', {
+        signal: navigationController.signal
+      })
+      .then(response => {
+        document.getElementById('output3').innerHTML = 
+          '<span class="success">✓ User data loaded</span>';
+      })
+      .catch(error => {
+        if (error.name === 'CanceledError') {
+          document.getElementById('output3').innerHTML = 
+            '<span class="error">✗ Request cancelled due to navigation</span>';
+        } else {
+          document.getElementById('output3').innerHTML = 
+            '<span class="error">✗ Error: ' + error.message + '</span>';
+        }
+      });
+    }
+
+    function simulateNavigation() {
+      if (navigationController) {
+        navigationController.abort();
+        document.getElementById('output3').innerHTML += 
+          '<br><em>User navigated away - request cleaned up</em>';
+      }
+    }
+
+    // Cleanup on page unload (best practice)
+    window.addEventListener('beforeunload', () => {
+      if (singleController) singleController.abort();
+      if (multipleController) multipleController.abort();
+      if (navigationController) navigationController.abort();
+    });
+  </script>
+</body>
+</html>
