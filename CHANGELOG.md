@@ -1,5 +1,6 @@
 # Changelog
 
+
 # [1.11.0](https://github.com/axios/axios/compare/v1.10.0...v1.11.0) (2025-07-22)
 
 
@@ -1234,4 +1235,5 @@ This functionality is considered as a fix.
 - [Marco Weber](https://github.com/mrcwbr)
 - [Luca Pizzini](https://github.com/lpizzinidev)
 - [Willian Agostini](https://github.com/WillianAgostini)
+
 - [Huyen Nguyen](https://github.com/huyenltnguyen)
